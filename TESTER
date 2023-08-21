@@ -1,0 +1,336 @@
+
+//PARTIE CHARGEMENT D'IMAGE
+const photo = document.querySelector('#image');
+const form = document.querySelector(".container form");
+const fields = form.querySelectorAll("input[type='text'], select");
+const validateButton = document.getElementById("validateButton");
+
+photo.addEventListener('change', changeImage);
+
+function changeImage() {
+    let file = new FileReader();
+    file.readAsDataURL(photo.files[0]);
+    file.onloadend = function (event) {
+        const path = event.target.result;
+        document.querySelector('#photo').setAttribute('src', path);
+    }
+}
+//FIn PARTIE CHARGEMENT D'IMAGE
+
+validateButton.addEventListener("click", function () {
+    let hasEmptyFields = false;
+
+    fields.forEach((field) => {
+        const errorMessage = field.parentElement.querySelector(".error-message");
+        if (field.value.trim() === "" || (field.tagName === "SELECT" && field.value === "")) {
+            hasEmptyFields = true;
+            errorMessage.textContent = "Champ obligatoire";
+            errorMessage.style = "color: red"
+        } else {
+            errorMessage.textContent = "";
+        }
+    });
+
+    if (hasEmptyFields) {
+        event.preventDefault();
+    }
+});
+//PARTIE CATEGORIE 
+// Partie Catégorie
+const selectElement = document.getElementById("categorie");
+const selectedCategoriesElement = document.getElementById("selectedCategories");
+let currentSelectedRadio = null;
+const selectedCategoryValueElement = document.getElementById("selectedCategoryValue");
+
+fetch("http://localhost:8000/api/categorie")
+    .then(response => response.json())
+    .then(categories => {
+        categories.forEach(category => {
+            const option = document.createElement("option");
+            option.value = category.id;
+            option.textContent = category.libelle;
+            selectElement.appendChild(option);
+        });
+    })
+    .catch(error => {
+        console.error("Erreur lors de la récupération des catégories :", error);
+    });
+
+selectElement.addEventListener("change", function () {
+    const selectedValue = selectElement.value;
+
+    if (currentSelectedRadio) {
+        selectedCategoriesElement.removeChild(currentSelectedRadio);
+        currentSelectedRadio = null;
+    }
+
+    if (selectedValue) {
+        const radio = document.createElement('input');
+        radio.type = "radio";
+        radio.name = "selectedCategory";
+        radio.checked = true;
+
+        const label = document.createElement('label');
+        label.appendChild(document.createTextNode(selectedValue));
+        label.appendChild(radio);
+
+        radio.addEventListener("change", function () {
+            if (!radio.checked) {
+                currentSelectedRadio = null;
+            } else {
+                currentSelectedRadio = label;
+            }
+        });
+
+        selectedCategoriesElement.appendChild(label);
+        currentSelectedRadio = label;
+
+        selectedCategoryValueElement.textContent = selectedValue;
+
+    }
+});
+
+
+
+const newCategoryInput = document.getElementById("newCategoryInput");
+const saveCategoryButton = document.getElementById("saveCategoryButton");
+
+saveCategoryButton.addEventListener("click", function () {
+    const newCategory = newCategoryInput.value;
+    if (newCategory) {
+        fetch("http://localhost:8000/api/categorie/add", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ libelle: newCategory })
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.success) {
+                    const option = document.createElement("option");
+                    option.value = newCategory;
+                    option.textContent = newCategory;
+                    selectElement.appendChild(option);
+                    newCategoryInput.value = "";
+                } else {
+                    console.error("Erreur lors de l'ajout de la catégorie :", data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Erreur lors de l'ajout de la catégorie :", error);
+            });
+    }
+});
+// Ajout d'unités
+const selectElementUnite = document.getElementById("unite");
+const selectedUnitesElement = document.getElementById("selectedUnites");
+let currentSelectedRadioUnite = null;
+
+fetch("http://localhost:8000/api/unite")
+    .then(response => response.json())
+    .then(unites => {
+        unites.forEach(unite => {
+            const option = document.createElement("option");
+            option.value = unite.libelle;
+            option.textContent = unite.libelle;
+            selectElementUnite.appendChild(option);
+        });
+    })
+    .catch(error => {
+        console.error("Erreur lors de la récupération des unités :", error);
+    });
+
+selectElementUnite.addEventListener("change", function () {
+    const selectedValueUnite = selectElementUnite.value;
+
+    if (currentSelectedRadioUnite) {
+        selectedUnitesElement.removeChild(currentSelectedRadioUnite);
+        currentSelectedRadioUnite = null;
+    }
+
+    if (selectedValueUnite) {
+        const radioUnite = document.createElement('input');
+        radioUnite.type = "radio";
+        radioUnite.name = "selectedUnite";
+        radioUnite.checked = true;
+
+        const labelUnite = document.createElement('label');
+        labelUnite.appendChild(document.createTextNode(selectedValueUnite));
+        labelUnite.appendChild(radioUnite);
+
+        radioUnite.addEventListener("change", function () {
+            if (!radioUnite.checked) {
+                currentSelectedRadioUnite = null;
+            } else {
+                currentSelectedRadioUnite = labelUnite;
+            }
+        });
+
+        selectedUnitesElement.appendChild(labelUnite);
+        currentSelectedRadioUnite = labelUnite;
+    }
+});
+
+const newUniteInput = document.getElementById("newUniteInput");
+const newConversionInput = document.getElementById("newConversionInput");
+const saveUniteButton = document.getElementById("saveUniteButton");
+
+saveUniteButton.addEventListener("click", function () {
+    const newUnite = newUniteInput.value;
+    const newConversion = newConversionInput.value;
+    const selectedCategory = selectedCategoryValueElement.textContent;
+
+    if (newUnite && newConversion && selectedCategory) {
+        // console.log("newUnite :", newUnite);
+        // console.log("newConversion :", newConversion);
+        // console.log("selectedCategory :", selectedCategory);
+        fetch("http://localhost:8000/api/unite/add", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                libelle: newUnite,
+                conversion: newConversion,
+                categorie: selectedCategory // Utilisation de l'ID de catégorie récupéré
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log(data);
+                    const option = document.createElement("option");
+                    option.value = newUnite;
+                    option.textContent = newUnite;
+                    selectElementUnite.appendChild(option);
+                    newUniteInput.value = "";
+                    newConversionInput.value = "";
+                    selectedCategoryValueElement.textContent = "";
+                    // categorie = selectedCategory;
+                    console.log("Unité ajoutée avec succès !");
+                } else {
+                    console.error("Erreur lors de l'ajout de l'unité :", data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Erreur lors de l'ajout de l'unité :", error);
+            });
+    }
+});
+
+
+//FIN PARTIE UNITE
+
+
+
+// //ajout article
+// formAddArticle.onsubmit = async function (event) {
+//     event.preventDefault()
+//     const libelleArticle = libelle.value
+//     const prixArticle = prixAchat.value
+//     const quantiteArticle = quantite.value
+//     const libelleCategorie = selectCategorie.options[selectCategorie.selectedIndex].textContent
+//     // const photoArticle = photo.value
+//     const selectCategorieArticle = selectCategorie.value
+//     const selectUniteArticle = selectUnite.value
+//     await Api.postData(`${WEB_URL}/articleconfection-add`,
+//         {
+//             libelle: libelleArticle, prixAchat: prixArticle, quantite: quantiteArticle,
+//             selectCategorie: selectCategorieArticle, selectUnite: selectUniteArticle, libelleCategorie: libelleCategorie
+//         }).then(function (data) {
+//         })
+// }
+
+// /* debut ajout unite */
+
+// //recuperation de la categorie pour l'unite apres ouverture du modale
+// buttonAddUnite.addEventListener("click", function () {
+//     const id = selectCategorie.options[selectCategorie.selectedIndex].value
+//     const libelleCategorie = selectCategorie.options[selectCategorie.selectedIndex].textContent
+//     const categorieSelectionner = document.querySelector('#categorieSelectionner');
+//     const categorieModale2 = document.querySelector('#categorieModale2')
+//     categorieModale2.value = libelleCategorie
+//     categorieModale2.disabled = true;
+//     categorieSelectionner.textContent = "la ctegorie selectionner est :" + libelleCategorie
+// })
+// //ajout dans le tableau des unites
+// let table = [];
+// let objetUnite = {};
+// ok.addEventListener("click", function () {
+//     const id = selectCategorie.options[selectCategorie.selectedIndex].value
+//     const libelleCategorie = selectCategorie.options[selectCategorie.selectedIndex].textContent
+//     const libelleUnite = document.querySelector("#libelleUnite")
+//     const enMetre = document.querySelector("#enMetre")
+//     objetUnite = {
+//         "id": id,
+//         "libelle": libelleUnite.value,
+//         "convertisseur": enMetre.value,
+//     }
+//     table.push(objetUnite);
+//     tbody2.innerHTML += `
+//     <tr class="table">
+//     <th scope="row">${id}</th>
+//     <td>${libelleUnite.value}</td>
+//     <td>${enMetre.value}</td>
+//     <td>
+//     <div class="action" style="display: flex;justify-content:space-around">
+//     <a name="" id="deleteCategorie" class="btn btn-primary" href="#" role="button"
+//         > <i class="fas fa-archive" style="color:#002879"></i></a>
+//     </div>
+//     </td>
+//     </tr> 
+// `
+// });
+
+// exampleModal2.onsubmit = async function (event) {
+//     event.preventDefault()
+//     await Api.postData(`${WEB_URL}/unite-add`, { table: table }).then(function (data) {
+
+//     })
+
+// }
+
+// /* fin ajout unite */
+
+
+// // parti1 recherche fournisseur 
+// const fournisseur = document.querySelector('#fournisseur')
+// fournisseur.addEventListener("input", async function () {
+//     await Api.getData(`${WEB_URL}/fournisseur-list`).then(function (data) {
+//         data.forEach(element => {
+//             if (element.nom.includes(fournisseur.value)) {
+//                 var checkbox = document.createElement('input');
+//                 checkbox.type = 'checkbox';
+//                 checkbox.id = 'car';
+//                 checkbox.name = 'interest';
+//                 checkbox.checked = false;
+
+//                 var label = document.createElement('label')
+//                 label.htmlFor = 'car';
+//                 label.appendChild(document.createTextNode(element.nom));
+
+//                 var br = document.createElement('br');
+
+//                 var container = document.getElementById('conteneurCheck');
+//                 container.appendChild(checkbox);
+//                 container.appendChild(label);
+//                 container.appendChild(br);
+//             }
+//         });
+
+//     });
+// })
+
+// exampleModal3.onsubmit = async function (event) {
+//     event.preventDefault()
+//     const nomf = nom.value
+//     const prenomf = prenom.value
+//     const emailf = email.value
+//     const passwordf = password.value
+//     await Api.postData(`${WEB_URL}/fournisseur-add`, { nom: nomf, prenom: prenomf, email: emailf, password: passwordf }).then(function (data) {
+
+//     })
+
+// }
