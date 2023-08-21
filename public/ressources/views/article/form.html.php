@@ -42,10 +42,12 @@
             </div>
             <div class="col-6">
                 <div class="mb-3 col-10 d-flex">
-                    <input type="text" class="form-control me-2" id="fournisseurInput" placeholder="Commencez à saisir un fournisseur">
+                <input type="text" class="form-control me-2" id="fournisseurInput" placeholder="Saisissez un fournisseur">
+                    <!-- <input type="text" class="form-control me-2" id="fournisseurInput" placeholder="Commencez à saisir un fournisseur"> -->
+                    <button type="button" class="btn btn-outline-dark btn-circle" data-bs-toggle="modal" data-bs-target="#fournisseurModal" id="modalFournisseur">+</button>
                     <div class="error-message"></div>
                 </div>
-                <div class="autocomplete-container" id="autocompleteContainer"></div>
+                <div id="autocompleteContainer"></div>
 
 
 
@@ -130,25 +132,25 @@
                     <form>
                         <div class="mb-3">
                             <label for="nom" class="form-label">Nom</label>
-                            <input type="text" class="form-control" id="nom" name="nom">
+                            <input type="text" class="form-control" id="nomFournisseur" name="nom">
                         </div>
                         <div class="mb-3">
                             <label for="prenom" class="form-label">Prénom</label>
-                            <input type="text" class="form-control" id="prenom" name="prenom">
+                            <input type="text" class="form-control" id="prenomFournisseur" name="prenom">
                         </div>
                         <div class="mb-3">
                             <label for="adresse" class="form-label">Adresse</label>
-                            <input type="text" class="form-control" id="adresse" name="adresse">
+                            <input type="text" class="form-control" id="adresseFournisseur" name="adresse">
                         </div>
                         <div class="mb-3">
                             <label for="telephone" class="form-label">Numéro de téléphone</label>
-                            <input type="tel" class="form-control" id="telephone" name="telephone">
+                            <input type="tel" class="form-control" id="telephoneFournisseur" name="telephone">
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-primary">Enregistrer</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ANNULER</button>
+                    <button type="button" class="btn btn-primary" id="saveFournisseurButton" data-bs-dismiss="modal">AJOUTER</button>
                 </div>
             </div>
         </div>

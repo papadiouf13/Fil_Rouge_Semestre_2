@@ -221,3 +221,101 @@ validateButton.addEventListener("click", async () => {
 
         }).then(function (data) { })
 })
+
+//-------------------*********************PARTIE AJOUT FOURNISSEUR *****************----------------------
+
+saveFournisseurButton.addEventListener("click", async function () {
+    const nom = nomFournisseur.value;
+    const prenom = prenomFournisseur.value;
+    const adresse = adresseFournisseur.value;
+    const telephone = telephoneFournisseur.value;
+    await Api.postData("http://localhost:8000/api/fournisseur/add",
+    {
+        nom: nom,
+        prenom: prenom,
+        adresse: adresse,
+        telephone: telephone,
+
+    }).then(function (data) { })
+});
+//-----------------------------****************FIN PARTIE AJOUT FOURNISSEUR*****************-------------------------------
+
+//---------------------------PARTIE RECHERCHE FOURNISSEUR DANS LE INPUT------------------------------------------
+const fournisseurInput = document.getElementById("fournisseurInput");
+const autocompleteContainer = document.getElementById("autocompleteContainer");
+let selectedFournisseurs = new Set(); // Stocke les fournisseurs sélectionnés
+let fournisseurs = []; // Stocke la liste complète des fournisseurs
+
+async function fetchFournisseurs() {
+    try {
+        const response = await fetch("http://localhost:8000/api/fournisseur");
+        const data = await response.json();
+        fournisseurs = data; // Met à jour la liste des fournisseurs
+    } catch (error) {
+        console.error("Erreur lors de la récupération des fournisseurs :", error);
+    }
+}
+
+fetchFournisseurs(); // Appelle la fonction pour récupérer les fournisseurs au chargement
+
+
+function renderAutocompleteOptions(options) {
+    autocompleteContainer.innerHTML = "";
+
+    if (options.length === 0 && fournisseurInput.value !== "") {
+        const message = document.createElement("div");
+        message.className = "autocomplete-message";
+        message.textContent = "Fournisseur non trouvé";
+        autocompleteContainer.appendChild(message);
+    } else {
+        options.forEach(fournisseur => {
+            const option = document.createElement("div");
+            option.className = "autocomplete-option";
+
+            const label = document.createElement("label");
+            label.textContent = fournisseur.prenom + " " + fournisseur.nom; // Utilise le prénom et le nom
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.addEventListener("change", function () {
+                if (this.checked) {
+                    selectedFournisseurs.add(fournisseur); // Ajoute l'objet fournisseur
+                } else {
+                    selectedFournisseurs.delete(fournisseur);
+                }
+            });
+
+            if (selectedFournisseurs.has(fournisseur)) {
+                checkbox.checked = true;
+            }
+
+            label.appendChild(checkbox);
+            option.appendChild(label);
+            autocompleteContainer.appendChild(option);
+        });
+    }
+}
+
+fournisseurInput.addEventListener("blur", function () {
+    // Sauvegarde des valeurs sélectionnées dans une structure appropriée
+    console.log("Fournisseurs sélectionnés :", Array.from(selectedFournisseurs));
+});
+
+fournisseurInput.addEventListener("input", function () {
+    const inputValue = this.value.toLowerCase();
+    const filteredFournisseurs = fournisseurs.filter(fournisseur => fournisseur.nom.toLowerCase().includes(inputValue));
+
+    renderAutocompleteOptions(filteredFournisseurs);
+});
+
+fournisseurInput.addEventListener("keyup", function () {
+    const inputValue = this.value.toLowerCase();
+    if (inputValue === "") {
+        const filteredSelectedFournisseurs = Array.from(selectedFournisseurs).filter(fournisseur =>
+            fournisseur.nom.toLowerCase().includes(inputValue)
+        );
+
+        renderAutocompleteOptions(filteredSelectedFournisseurs);
+    }
+});
+//-----------------PARTIE RECHERCHE FOURNISSEUR DANS LE INPUT-----------------------------------------

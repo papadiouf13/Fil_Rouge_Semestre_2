@@ -39,6 +39,7 @@ public function store() {
                 'prenom' => $data['prenom'],
                 'nom' => $data['nom'],
                 'telephone' => $data['telephone'],
+                'adresse' => $data['adresse'],
             ]);
 
             

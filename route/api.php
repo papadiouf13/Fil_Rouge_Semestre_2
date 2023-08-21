@@ -13,4 +13,5 @@ Router::route("/api/categorie/add",[CategorieController::class,'store']);
 Router::route("/api/article",[ArticleConfectionController::class,'index']);
 Router::route("/api/article/add",[ArticleConfectionController::class,'store']);
 Router::route("/api/fournisseur",[FournisseurController::class,'index']);
+Router::route("/api/fournisseur/add",[FournisseurController::class,'store']);
 
