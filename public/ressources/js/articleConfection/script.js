@@ -135,7 +135,7 @@ uniteModal.addEventListener("show.bs.modal", function () {
         modalUniteButton.setAttribute("disabled", "disabled"); // Désactiver le bouton "+ de l'unité"
     }
 });
-
+// AJOUT CATEGORIE
 const newCategoryInput = document.getElementById("newCategoryInput");
 const saveCategoryButton = document.getElementById("saveCategoryButton");
 
@@ -185,7 +185,7 @@ modalUnite.addEventListener("show.bs.modal", function () {
     categorieSelectionInput.value = libelleCategorie;
 });
 
-const unitDataArray = []; // Array to store libelle, conversion, and category data
+const unitDataArray = []; // Tableau pour stocker les données de libelle, de conversion et de catégorie
 
 addUnit.addEventListener("click", function () {
     const libelle = newUniteInput.value;
@@ -193,26 +193,52 @@ addUnit.addEventListener("click", function () {
     const categorieSelection = categorieSelectionInput.value; 
     const idCategorie = categorie.options[categorie.selectedIndex].value;
 
-    // Add the data to the array
+    // Ajouter les données au tableau
     unitDataArray.push({ libelle, conversion, idCategorie });
 
-    // Update the table body
-    unitTableBody.innerHTML += `
-        <tr class="">
-            <th scope="row">${libelle}</th>
-            <td>${conversion}</td>
-            <td>
-                <button class="btn btn-danger">
-                    <i class="fas fa-trash-alt"></i>
-                </button>
-            </td>
-        </tr>
-    `;
-    
-    // Clear the input fields
+    // Mettre à jour le body du tableau
+    updateTable();
+
+    // Effacer les champs de saisie
     newUniteInput.value = "";
     newConversionInput.value = "";
 });
+
+function updateTable() {
+    // Effacer les lignes existantes
+    unitTableBody.innerHTML = "";
+
+    // Reconstruire la table avec les données actuelles
+    unitDataArray.forEach((unit, index) => {
+        const { libelle, conversion } = unit;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <th scope="row">${libelle}</th>
+            <td>${conversion}</td>
+            <td>
+                <button class="btn btn-danger trash-button">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </td>
+        `;
+
+        const trashButton = row.querySelector('.trash-button');
+        trashButton.addEventListener('click', (event) => {
+            event.stopPropagation(); //Empêcher la propagation des événements au modal
+            deleteUnit(index);
+        });
+
+        unitTableBody.appendChild(row);
+    });
+}
+
+function deleteUnit(index) {
+    // Supprimez l'élément correspondant de unitDataArray
+    unitDataArray.splice(index, 1);
+
+    // Mettre à jour le tableau
+    updateTable();
+}
 
 saveUniteButton.addEventListener("click", async function () {
     try {
@@ -245,7 +271,7 @@ saveUniteButton.addEventListener("click", async function () {
 });
 
 
-//FIN AJOUT UNITE
+//FIN AJOUT UNITE  
 
 validateButton.addEventListener("click", async () => {
     const libelleArticle = libelle.value;
