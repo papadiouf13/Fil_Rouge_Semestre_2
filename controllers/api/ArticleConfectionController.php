@@ -4,6 +4,7 @@ namespace App\Controllers\Api;
 
 use App\Core\Validator;
 use App\Core\Controller;
+use App\Models\FourniArticle;
 use App\Models\ArticleConfection;
 
 
@@ -53,7 +54,7 @@ class ArticleConfectionController extends Controller
             $photo = "photo";
             try {
 
-                ArticleConfection::create(
+                $article = ArticleConfection::create(
                     [
                         'libelle' => $data['libelle'],
                         'prix' => $data['prix'],
@@ -64,6 +65,13 @@ class ArticleConfectionController extends Controller
                     ]
 
                 );
+                foreach ($data['idfournisseur'] as $value) {
+                    
+                    FourniArticle::create([
+                       'idarticleconf' => $article,
+                       'idfournisseur' => $value['id'],
+                    ]);
+                }
             } catch (\PDOException $th) {
                 Validator::$errors;
             }
@@ -75,11 +83,6 @@ class ArticleConfectionController extends Controller
         }
     }
 
-
-    public function form()
-    {
-        $this->view('article/form');
-    }
 
    
 

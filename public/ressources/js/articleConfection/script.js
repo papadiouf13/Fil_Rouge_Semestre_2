@@ -70,6 +70,34 @@ window.addEventListener("load", async function () {
 
 
 })
+const libelleInput = document.getElementById('libelle');
+const messageDiv = document.getElementById('message');
+
+libelleInput.addEventListener('input', async function () {
+    const libelle = libelleInput.value.trim();
+
+    if (libelle.length >= 3) {
+        try {
+            const response = await fetch(`http://localhost:8000/api/article`);
+            const data = await response.json();
+
+            const articleExists = data.some(article => article.libelle.toLowerCase() === libelle.toLowerCase());
+
+            if (articleExists) {
+                messageDiv.textContent = libelle + ' existe déjà dans la base de données.';
+                messageDiv.style.color = 'green';
+            } else {
+                messageDiv.textContent = 'La valeur ' + libelle + " n'existe pas dans la base de données.";
+                messageDiv.style.color = 'red';
+            }
+        } catch (error) {
+            console.error("Une erreur s'est produite :", error);
+        }
+    } else {
+        messageDiv.textContent = '';
+        // messageDiv.style.color = 'black';
+    }
+});
 
 //recuperer photo apres clique 
 const inputvalid = document.querySelector("#image")
@@ -85,158 +113,213 @@ function onChangeImage() {
 
 
 //Selectionne Categorie
+const categorie = document.getElementById("categorie");
+const modalUniteButton = document.getElementById("modalUnite");
 categorie.addEventListener("change", function () {
+    if (categorie.value !== "") {
+        modalUniteButton.removeAttribute("disabled"); // Activer le bouton "+ de l'unité"
+    } else {
+        modalUniteButton.setAttribute("disabled", "disabled"); // Désactiver le bouton "+ de l'unité"
+    }
     const id = categorie.options[categorie.selectedIndex].value
     const libelle = categorie.options[categorie.selectedIndex].textContent
     var checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.id = id;
     checkbox.name = libelle;
-    checkbox.checked = true;
+});
 
-    var label = document.createElement('label')
-    label.htmlFor = 'car';
-    label.appendChild(document.createTextNode(libelle));
-
-    var br = document.createElement('br');
-
-    var container = document.getElementById('selectedCategories');
-    container.appendChild(checkbox);
-    container.appendChild(label);
-    container.appendChild(br);
-    checkbox.addEventListener("click", function () {
-        checkbox.style.display = "none"
-        label.style.display = "none"
-    })
-
-})
-
-
-//AJOUTER CATEGORIE
+const uniteModal = document.getElementById("uniteModal");
+uniteModal.addEventListener("show.bs.modal", function () {
+    if (categorie.value === "") {
+        modalUniteButton.setAttribute("disabled", "disabled"); // Désactiver le bouton "+ de l'unité"
+    }
+});
 
 const newCategoryInput = document.getElementById("newCategoryInput");
 const saveCategoryButton = document.getElementById("saveCategoryButton");
 
-saveCategoryButton.addEventListener("click", function () {
+saveCategoryButton.addEventListener("click", async function () {
     const newCategory = newCategoryInput.value;
     if (newCategory) {
-        fetch("http://localhost:8000/api/categorie/add", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ libelle: newCategory })
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                if (data.success) {
-                    const option = document.createElement("option");
-                    option.value = newCategory;
-                    option.textContent = newCategory;
-                    selectElement.appendChild(option);
-                    newCategoryInput.value = "";
-                } else {
-                    console.error("Erreur lors de l'ajout de la catégorie :", data.message);
-                }
-            })
-            .catch(error => {
-                console.error("Erreur lors de l'ajout de la catégorie :", error);
+        try {
+            const data = await Api.postData("http://localhost:8000/api/categorie/add", {
+                libelle: newCategory,
+                unite: unitedefaut.value,
+                conversion: conversiondefaut.value,
             });
+
+            if (data.success) {
+                const selectCategorie = document.getElementById("categorie");
+                const option = document.createElement("option");
+                option.value = newCategory;
+                option.textContent = newCategory;
+                selectCategorie.appendChild(option);
+                newCategoryInput.value = "";
+                selectCategorie.value = newCategory;
+                modalUniteButton.removeAttribute("disabled");
+            } else {
+                console.error("Erreur lors de l'ajout de la catégorie :", data.message);
+            }
+        } catch (error) {
+            console.error("Erreur lors de l'ajout de la catégorie :", error);
+        }
     }
 });
 
-// FIN AJOUT CATEGORIE
+// FIN AJOUT CATEGORIE AVEC APRES AJOUT LA VALEUR AJOUTER SOIT DANS LE SELECTED 
 
+
+// AJOUT UNITE 
+const modalUnite = document.querySelector("#uniteModal");
+const categorieSelectionInput = document.getElementById("categorieSelection");
 const newUniteInput = document.getElementById("newUniteInput");
 const newConversionInput = document.getElementById("newConversionInput");
 const saveUniteButton = document.getElementById("saveUniteButton");
+const unitTableBody = document.getElementById("unitTableBody");
 
-modalUnite.addEventListener("click", function () {
+
+modalUnite.addEventListener("show.bs.modal", function () {
     const idCategorie = categorie.options[categorie.selectedIndex].value;
     const libelleCategorie = categorie.options[categorie.selectedIndex].textContent;
-    selectedCategoryValue.textContent = libelleCategorie;
-})
-saveUniteButton.addEventListener("click", function () {
-    // alert("New Conversion");
-    const newUnite = newUniteInput.value;
-    const newConversion = newConversionInput.value;
+    categorieSelectionInput.value = libelleCategorie;
+});
+
+const unitDataArray = []; // Array to store libelle, conversion, and category data
+
+addUnit.addEventListener("click", function () {
+    const libelle = newUniteInput.value;
+    const conversion = newConversionInput.value;
+    const categorieSelection = categorieSelectionInput.value; 
     const idCategorie = categorie.options[categorie.selectedIndex].value;
-    const libelleCategorie = categorie.options[categorie.selectedIndex].textContent;
-    console.log(libelleCategorie);
 
-    // const selectedCategory = selectedCategoryValueElement.value;
+    // Add the data to the array
+    unitDataArray.push({ libelle, conversion, idCategorie });
 
+    // Update the table body
+    unitTableBody.innerHTML += `
+        <tr class="">
+            <th scope="row">${libelle}</th>
+            <td>${conversion}</td>
+            <td>
+                <button class="btn btn-danger">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </td>
+        </tr>
+    `;
+    
+    // Clear the input fields
+    newUniteInput.value = "";
+    newConversionInput.value = "";
+});
 
-    if (newUnite && newConversion && idCategorie) {
-        // console.log("newUnite :", newUnite);
-        // console.log("newConversion :", newConversion);
-        // console.log("selectedCategory :", selectedCategory);
-        fetch("http://localhost:8000/api/unite/add", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                libelle: newUnite,
-                conversion: newConversion,
-                categorie: idCategorie // Utilisation de l'ID de catégorie récupéré
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log(data);
-                    const option = document.createElement("option");
-                    option.value = newUnite;
-                    option.textContent = newUnite;
-                    newUniteInput.value = "";
-                    newConversionInput.value = "";
-                    console.log("Unité ajoutée avec succès !");
-                } else {
-                    console.error("Erreur lors de l'ajout de l'unité :", data.message);
-                }
-            })
-            .catch(error => {
-                console.error("Erreur lors de l'ajout de l'unité :", error);
-            });
+saveUniteButton.addEventListener("click", async function () {
+    try {
+        // Send unitDataArray to the server
+        const data = await Api.postData("http://localhost:8000/api/unite/add", unitDataArray);
+
+        console.log(data);
+
+        if (data.success) {
+            // Clear the array and table after successful submission
+            unitDataArray.length = 0;
+            unitTableBody.innerHTML = "";
+
+            // Update the select element with newly added units
+            const selectUnite = document.getElementById("unite");
+            for (const unit of data) {
+                const option = document.createElement("option");
+                option.value = unit.libelle;
+                option.textContent = unit.libelle;
+                selectUnite.appendChild(option);
+            }
+
+            console.log("Unités ajoutées avec succès !");
+        } else {
+            console.error("Erreur lors de l'ajout des unités :", data.message);
+        }
+    } catch (error) {
+        console.error("Erreur lors de l'ajout des unités :", error);
     }
 });
 
+
+//FIN AJOUT UNITE
+
 validateButton.addEventListener("click", async () => {
-    const libelleArticle = libelle.value
-    const prixArticle = prix.value
-    const quantiteArticle = quantite.value
-    const libelleCategorie = categorie.options[categorie.selectedIndex].textContent
-    // const photoArticle = photo.value
-    const categorieArticle = categorie.value
-    const selectUniteArticle = unite.value
-    await Api.postData("http://localhost:8000/api/article/add",
-        {
-            libelle: libelleArticle,
-            prix: prixArticle,
-            quantite: quantiteArticle,
-            idcategorie: categorieArticle,
-            idunite: selectUniteArticle
+    const libelleArticle = libelle.value;
+    const prixArticle = prix.value;
+    const quantiteArticle = quantite.value;
+    const libelleCategorie = categorie.options[categorie.selectedIndex].textContent;
+    // const photoArticle = photo.value;
+    const categorieArticle = categorie.value;
+    const selectUniteArticle = unite.value;
+    const selectedFournisseursArray = Array.from(selectedFournisseursIds).map(id => ({ id }));
+    console.log(selectedFournisseursArray);
 
-        }).then(function (data) { })
-})
+    await Api.postData("http://localhost:8000/api/article/add", {
+        libelle: libelleArticle,
+        prix: prixArticle,
+        quantite: quantiteArticle,
+        idcategorie: categorieArticle,
+        idunite: selectUniteArticle,
+        idfournisseur: selectedFournisseursArray
+    }).then(function (data) {
+        // Faites quelque chose avec la réponse de la requête
+    });
+});
 
-//-------------------*********************PARTIE AJOUT FOURNISSEUR *****************----------------------
+//-------------------*********************PARTIE AJOUT FOURNISSEUR *****************
+
+// saveFournisseurButton.addEventListener("click", async function () {
+//     const nom = nomFournisseur.value;
+//     const prenom = prenomFournisseur.value;
+//     const adresse = adresseFournisseur.value;
+//     const telephone = telephoneFournisseur.value;
+//     await Api.postData("http://localhost:8000/api/fournisseur/add",
+//         {
+//             nom: nom,
+//             prenom: prenom,
+//             adresse: adresse,
+//             telephone: telephone,
+
+//         }).then(function (data) { })
+// });
 
 saveFournisseurButton.addEventListener("click", async function () {
+    const nomFournisseur = document.getElementById("nomFournisseur");
+    const prenomFournisseur = document.getElementById("prenomFournisseur");
+    const adresseFournisseur = document.getElementById("adresseFournisseur");
+    const telephoneFournisseur = document.getElementById("telephoneFournisseur");
+
     const nom = nomFournisseur.value;
     const prenom = prenomFournisseur.value;
     const adresse = adresseFournisseur.value;
     const telephone = telephoneFournisseur.value;
-    await Api.postData("http://localhost:8000/api/fournisseur/add",
-    {
+
+    await Api.postData("http://localhost:8000/api/fournisseur/add", {
         nom: nom,
         prenom: prenom,
         adresse: adresse,
         telephone: telephone,
+    }).then(function (data) {
+        if (data.success) {
+            const fournisseurInput = document.getElementById("fournisseurInput");
+            fournisseurInput.value = ""; // Effacez le champ de saisie du fournisseur
+            selectedFournisseurs.clear(); // Effacez la liste des fournisseurs sélectionnés
 
-    }).then(function (data) { })
+            // Mettez à jour la liste des fournisseurs disponibles
+            fetchFournisseurs().then(() => {
+                // Réaffichez les options de fournisseur disponibles
+                fournisseurInput.dispatchEvent(new Event("input"));
+            });
+        } else {
+            console.error("Erreur lors de l'ajout du fournisseur :", data.message);
+        }
+    }).catch(error => {
+        console.error("Erreur lors de l'ajout du fournisseur :", error);
+    });
 });
 //-----------------------------****************FIN PARTIE AJOUT FOURNISSEUR*****************-------------------------------
 
@@ -245,6 +328,7 @@ const fournisseurInput = document.getElementById("fournisseurInput");
 const autocompleteContainer = document.getElementById("autocompleteContainer");
 let selectedFournisseurs = new Set(); // Stocke les fournisseurs sélectionnés
 let fournisseurs = []; // Stocke la liste complète des fournisseurs
+
 
 async function fetchFournisseurs() {
     try {
@@ -258,6 +342,9 @@ async function fetchFournisseurs() {
 
 fetchFournisseurs(); // Appelle la fonction pour récupérer les fournisseurs au chargement
 
+
+// const selectedFournisseurs = new Set();
+const selectedFournisseursIds = new Set();
 
 function renderAutocompleteOptions(options) {
     autocompleteContainer.innerHTML = "";
@@ -273,16 +360,21 @@ function renderAutocompleteOptions(options) {
             option.className = "autocomplete-option";
 
             const label = document.createElement("label");
-            label.textContent = fournisseur.prenom + " " + fournisseur.nom; // Utilise le prénom et le nom
+            label.textContent = fournisseur.prenom + " " + fournisseur.nom;
 
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkbox.addEventListener("change", function () {
                 if (this.checked) {
-                    selectedFournisseurs.add(fournisseur); // Ajoute l'objet fournisseur
+                    selectedFournisseurs.add(fournisseur);
+                    selectedFournisseursIds.add(fournisseur.id);
                 } else {
                     selectedFournisseurs.delete(fournisseur);
+                    selectedFournisseursIds.delete(fournisseur.id);
                 }
+
+                const selectedFournisseursArray = Array.from(selectedFournisseursIds).map(id => ({ id }));
+                console.log(selectedFournisseursArray);
             });
 
             if (selectedFournisseurs.has(fournisseur)) {
@@ -295,6 +387,10 @@ function renderAutocompleteOptions(options) {
         });
     }
 }
+
+// Pour obtenir le tableau d'objets contenant les IDs des fournisseurs sélectionnés
+
+
 
 fournisseurInput.addEventListener("blur", function () {
     // Sauvegarde des valeurs sélectionnées dans une structure appropriée
@@ -319,3 +415,4 @@ fournisseurInput.addEventListener("keyup", function () {
     }
 });
 //-----------------PARTIE RECHERCHE FOURNISSEUR DANS LE INPUT-----------------------------------------
+

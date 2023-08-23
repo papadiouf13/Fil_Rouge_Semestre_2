@@ -4,6 +4,7 @@
             <div class="col-6">
                 <div class="mb-4 col-10">
                     <input type="text" class="form-control" placeholder="Libellé" name="libelle" id="libelle">
+                    <div id="message"></div>
                     <div class="error-message"></div>
                 </div>
                 <div class="mb-4 col-10 d-flex">
@@ -27,7 +28,7 @@
                             <select class="form-select me-2" name="unite" id="unite">
                                 <option value="" disabled selected>Choisir une unité</option>
                             </select>
-                            <button type="button" class="btn btn-outline-dark btn-circle" data-bs-toggle="modal" data-bs-target="#uniteModal" id="modalUnite">+</button>
+                            <button type="button" class="btn btn-outline-dark btn-circle" data-bs-toggle="modal" data-bs-target="#uniteModal" id="modalUnite" disabled>+</button>
                             <div class="error-message"></div>
                         </div>
 
@@ -42,7 +43,7 @@
             </div>
             <div class="col-6">
                 <div class="mb-3 col-10 d-flex">
-                <input type="text" class="form-control me-2" id="fournisseurInput" placeholder="Saisissez un fournisseur">
+                    <input type="text" class="form-control me-2" id="fournisseurInput" placeholder="Saisissez un fournisseur">
                     <!-- <input type="text" class="form-control me-2" id="fournisseurInput" placeholder="Commencez à saisir un fournisseur"> -->
                     <button type="button" class="btn btn-outline-dark btn-circle" data-bs-toggle="modal" data-bs-target="#fournisseurModal" id="modalFournisseur">+</button>
                     <div class="error-message"></div>
@@ -76,8 +77,13 @@
                         <h5 class="modal-title" id="categorieModalLabel">Ajouter Une Categorie</h5>
                     </div>
                     <div class="modal-body">
-                        <!-- Contenu du formulaire pour la nouvelle catégorie -->
-                        <input type="text" class="form-control" placeholder="Nom de la catégorie" id="newCategoryInput" name="libelle">
+                        <div class="col">
+                            <input type="text" class="form-control" placeholder="Nom de la catégorie" id="newCategoryInput" name="libelle">
+                        </div>
+                        <div class="col mt-4 d-flex justify-content-between">
+                            <input type="text" class="form-control" placeholder="Unite par defaut" name="unitedefaut" id="unitedefaut">
+                            <input type="text" class="form-control" placeholder="Conversion" name="conversiondefaut" id="conversiondefaut">
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" id="saveCategoryButton" data-bs-dismiss="modal">Enregistrer</button>
@@ -96,22 +102,30 @@
                     <h5 class="modal-title" id="uniteModalLabel">Ajouter Une Unite</h5>
                 </div>
                 <div class="modal-body">
-                    <!-- Contenu du formulaire pour la nouvelle unité -->
-                    <input type="text" class="form-control" placeholder="Nom de l'unité" id="newUniteInput" name="libelle">
+                    <input type="text" class="form-control" placeholder="" id="categorieSelection" disabled>
+                    <input type="text" class="form-control mt-2" placeholder="1 mètre" disabled id="selectedUnitInput">
                     <div class="col d-flex justify-content-around mt-3">
-                        <input type="text" placeholder="1 mètre" disabled>
+                        <input type="text" class="form-control" placeholder="Nom de l'unité" id="newUniteInput" name="libelle">
                         <label for="">=</label>
                         <input type="text" placeholder="valeur en conversion" id="newConversionInput" name="conversion">
-                        <button type="button" class="btn btn-outline-dark btn-circle">+</button>
+                        <button type="button" class="btn btn-outline-dark btn-circle" id="addUnit">+</button>
                     </div>
+                    <!-- Le tableau pour afficher les unités ajoutées -->
                     <div class="mt-4">
-                        <p>Catégorie sélectionnée : <span id="selectedCategoryValue" name="idcategorie"></span></p>
-
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Unité</th>
+                                    <th>Valeur de conversion</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="unitTableBody"></tbody>
+                        </table>
                     </div>
-                    <div id="checkboxContainer"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="saveUniteButton">Enregistrer</button>
+                    <button type="button" class="btn btn-primary" id="saveUniteButton" data-bs-dismiss="modal">Enregistrer</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                 </div>
             </div>
@@ -171,7 +185,7 @@
             </tr>
         </thead>
         <tbody id="tableauArticleConfection">
-            
+
             <!-- <tr>
                 <td>Produit 2</td>
                 <td>Catégorie B</td>

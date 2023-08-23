@@ -1,9 +1,11 @@
 <?php
 namespace App\Controllers\Api;
 
+use App\Models\Unite;
 use App\Core\Validator;
 use App\Core\Controller;
 use App\Models\Categorie;
+use App\Models\UniCategorie;
 
 
 
@@ -45,10 +47,19 @@ public function store() {
 
     if (Validator::validate()) {
         try {
-            Categorie::create([
+            $categorie = Categorie::create([
                 'libelle' => $data['libelle']
             ]);
 
+            $unite = Unite::create([
+                'libelle' => $data['unite'],
+                'conversion' => $data['conversion'],
+                'etat' => 1
+            ]);
+            UniCategorie::create([
+                'unite' => $unite,
+                'categorie' => $categorie
+            ]);
             $response['success'] = true;
             $response['message'] = "Catégorie ajoutée avec succès";
         } catch (\PDOException $th) {
