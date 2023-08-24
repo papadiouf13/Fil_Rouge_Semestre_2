@@ -8,6 +8,8 @@ use App\Controllers\Api\ArticleConfectionController;
 
 Router::route("/api/categorie",[CategorieController::class,'index']);
 Router::route("/api/unite",[UniteController::class,'index']);
+Router::route("/api/uniteCategorie",[UniteController::class,'unite']);
+Router::route("/api/categorieID",[UniteController::class,'categoryID']);
 Router::route("/api/unite/add",[UniteController::class,'store']);
 Router::route("/api/categorie/add",[CategorieController::class,'store']);
 Router::route("/api/article",[ArticleConfectionController::class,'index']);

@@ -26,17 +26,17 @@ window.addEventListener("load", async function () {
 
     });
 
-    const response1 = await fetch(`${WEB_URL}/unite`);
-    const data1 = await response1.json();
-    // console.log(data);
-    data1.forEach(element => {
-        const SelectUnite = document.getElementById("unite");
-        const option = document.createElement("option");
-        option.value = element.id;
-        option.textContent = element.libelle;
-        SelectUnite.appendChild(option);
+    // const response1 = await fetch(`${WEB_URL}/unite`);
+    // const data1 = await response1.json();
+    // // console.log(data);
+    // data1.forEach(element => {
+    //     const SelectUnite = document.getElementById("unite");
+    //     const option = document.createElement("option");
+    //     option.value = element.id;
+    //     option.textContent = element.libelle;
+    //     SelectUnite.appendChild(option);
 
-    });
+    // });
 
 
     const response2 = await fetch(`${WEB_URL}/article`);
@@ -98,6 +98,24 @@ libelleInput.addEventListener('input', async function () {
         // messageDiv.style.color = 'black';
     }
 });
+//PARTIE REFERENCES
+document.addEventListener("DOMContentLoaded", function () {
+    const libelleInput = document.getElementById("libelle");
+    const categorieInput = document.getElementById("categorie");
+    const referencesParagraph = document.getElementById("references");
+
+    function updateReferences() {
+        const libelleValue = libelleInput.value.substring(0, 3).toUpperCase();
+        const categorieValue = categorieInput.options[categorieInput.selectedIndex].text.substring(0, 3).toUpperCase();
+
+        const reference = `References : ${libelleValue}-${categorieValue}-000`;
+        referencesParagraph.textContent = reference;
+    }
+
+    libelleInput.addEventListener("input", updateReferences);
+    categorieInput.addEventListener("change", updateReferences);
+});
+//FIN PARTIE REFERENCES 
 
 //recuperer photo apres clique 
 const inputvalid = document.querySelector("#image")
@@ -121,13 +139,33 @@ categorie.addEventListener("change", function () {
     } else {
         modalUniteButton.setAttribute("disabled", "disabled"); // Désactiver le bouton "+ de l'unité"
     }
-    const id = categorie.options[categorie.selectedIndex].value
-    const libelle = categorie.options[categorie.selectedIndex].textContent
-    var checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.id = id;
-    checkbox.name = libelle;
 });
+categorie.addEventListener('change', async function () {
+    const idCategorie = categorie.options[categorie.selectedIndex].value;
+    const data = await Api.postData("http://localhost:8000/api/categorieID", {
+        categorieID: idCategorie,
+
+    });
+
+})
+
+categorie.addEventListener('change', async () => {
+    const response1 = await fetch(`${WEB_URL}/uniteCategorie`);
+    const data1 = await response1.json();
+
+    // Effacer les options existantes du sélecteur d'unités
+    const SelectUnite = document.getElementById("unite");
+    SelectUnite.innerHTML = "";
+
+    // Ajouter les nouvelles options basées sur la catégorie sélectionnée
+    data1.forEach(element => {
+        const option = document.createElement("option");
+        option.value = element.id;
+        option.textContent = element.libelle;
+        SelectUnite.appendChild(option);
+    });
+});
+
 
 const uniteModal = document.getElementById("uniteModal");
 uniteModal.addEventListener("show.bs.modal", function () {
@@ -179,10 +217,14 @@ const saveUniteButton = document.getElementById("saveUniteButton");
 const unitTableBody = document.getElementById("unitTableBody");
 
 
-modalUnite.addEventListener("show.bs.modal", function () {
+modalUnite.addEventListener("show.bs.modal",async function () {
     const idCategorie = categorie.options[categorie.selectedIndex].value;
     const libelleCategorie = categorie.options[categorie.selectedIndex].textContent;
     categorieSelectionInput.value = libelleCategorie;
+    const response = await fetch(`${WEB_URL}/uniteCategorie`);
+    const data = await response.json();
+    console.log(data);
+    selectedUnitInput.value = data[0].libelle;
 });
 
 const unitDataArray = []; // Tableau pour stocker les données de libelle, de conversion et de catégorie
@@ -190,7 +232,7 @@ const unitDataArray = []; // Tableau pour stocker les données de libelle, de co
 addUnit.addEventListener("click", function () {
     const libelle = newUniteInput.value;
     const conversion = newConversionInput.value;
-    const categorieSelection = categorieSelectionInput.value; 
+    const categorieSelection = categorieSelectionInput.value;
     const idCategorie = categorie.options[categorie.selectedIndex].value;
 
     // Ajouter les données au tableau

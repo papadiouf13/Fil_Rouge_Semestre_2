@@ -11,6 +11,7 @@ use App\Models\UniCategorie;
 
 class UniteController extends Controller
 {
+    
     /** UniteController
      *
      *@return mixed
@@ -22,10 +23,35 @@ class UniteController extends Controller
         // die('SALAM');
         $this->JsonEncode(Unite::all());
     }
-    // public function unite() {
-    //     // die('SALAM');
-    //     $this ->JsonEncode(Unite::all());
-    // }
+
+
+    public function unite()
+    {
+        $model = new Unite();
+        $selectColumns = ['unite.libelle']; // Colonne(s) que vous souhaitez sélectionner
+    
+        $joinConditions = [
+            ['table' => 'UniCategorie', 'on' => 'Unite.id = UniCategorie.Unite'],
+            ['table' => 'Categorie', 'on' => 'UniCategorie.Categorie = Categorie.id']
+        ];
+        $whereConditions = [
+            'Categorie.id =' => $_SESSION['id'],
+            // 'unite.etat =' => 1
+        ];
+        
+        $results = $model->findByJoinAndConditions($selectColumns, 'unite', $joinConditions, $whereConditions);
+        $this->JsonEncode($results);
+    }
+    
+public function categoryID()
+{
+    $data = json_decode(file_get_contents('php://input'), true);
+   $id = $data['categorieID'];
+   $_SESSION['id'] = $id;
+//    dd($_SESSION['id']);
+}
+
+    
 
     /** 
      *

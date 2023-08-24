@@ -3,7 +3,7 @@
         <div class="col d-flex">
             <div class="col-6">
                 <div class="mb-4 col-10">
-                    <input type="text" class="form-control" placeholder="Libellé" name="libelle" id="libelle">
+                    <input type="text" class="form-control" placeholder="Libelle" name="libelle" id="libelle">
                     <div id="message"></div>
                     <div class="error-message"></div>
                 </div>
@@ -60,7 +60,7 @@
                         </label>
                     </div>
                     <div class="col p-5">
-                        <p>References : Lib-Cat-000</p>
+                        <p id="references">References : </p>
                     </div>
                 </div>
             </div>
