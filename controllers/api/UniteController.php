@@ -11,7 +11,7 @@ use App\Models\UniCategorie;
 
 class UniteController extends Controller
 {
-    
+
     /** UniteController
      *
      *@return mixed
@@ -29,7 +29,7 @@ class UniteController extends Controller
     {
         $model = new Unite();
         $selectColumns = ['unite.libelle']; // Colonne(s) que vous souhaitez sélectionner
-    
+
         $joinConditions = [
             ['table' => 'UniCategorie', 'on' => 'Unite.id = UniCategorie.Unite'],
             ['table' => 'Categorie', 'on' => 'UniCategorie.Categorie = Categorie.id']
@@ -38,20 +38,20 @@ class UniteController extends Controller
             'Categorie.id =' => $_SESSION['id'],
             // 'unite.etat =' => 1
         ];
-        
+
         $results = $model->findByJoinAndConditions($selectColumns, 'unite', $joinConditions, $whereConditions);
         $this->JsonEncode($results);
     }
-    
-public function categoryID()
-{
-    $data = json_decode(file_get_contents('php://input'), true);
-   $id = $data['categorieID'];
-   $_SESSION['id'] = $id;
-//    dd($_SESSION['id']);
-}
 
-    
+    public function categoryID()
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $id = $data['categorieID'];
+        $_SESSION['id'] = $id;
+        //    dd($_SESSION['id']);
+    }
+
+
 
     /** 
      *
@@ -82,12 +82,13 @@ public function categoryID()
                 try {
                     $unite = Unite::create([
                         'libelle' => $value['libelle'],
-                        'conversion' => $value['conversion']
+
                     ]);
 
                     UniCategorie::create([
                         'unite' => $unite,
-                        'categorie' => $categorie
+                        'categorie' => $categorie,
+                        'conversion' => $value['conversion']
                     ]);
 
 

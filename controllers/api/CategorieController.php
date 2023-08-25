@@ -53,12 +53,12 @@ public function store() {
 
             $unite = Unite::create([
                 'libelle' => $data['unite'],
-                'conversion' => $data['conversion'],
                 'etat' => 1
             ]);
             UniCategorie::create([
                 'unite' => $unite,
-                'categorie' => $categorie
+                'categorie' => $categorie,
+                'conversion' => $data['conversion'],
             ]);
             $response['success'] = true;
             $response['message'] = "Catégorie ajoutée avec succès";

@@ -125,6 +125,7 @@ function onChangeImage() {
     f.readAsDataURL(inputvalid.files[0]);
     f.onloadend = function (event) {
         const path = event.target.result;
+        console.log(path); 
         document.querySelector('#photo').setAttribute("src", path)
     }
 }
@@ -189,12 +190,18 @@ saveCategoryButton.addEventListener("click", async function () {
 
             if (data.success) {
                 const selectCategorie = document.getElementById("categorie");
+                const selectUnite = document.getElementById("unite");
                 const option = document.createElement("option");
+                const optionUnite = document.createElement("option");
                 option.value = newCategory;
                 option.textContent = newCategory;
+                optionUnite.value = unitedefaut.value,
+                optionUnite.textContent = unitedefaut.value,
                 selectCategorie.appendChild(option);
+                selectUnite.appendChild(optionUnite);
                 newCategoryInput.value = "";
                 selectCategorie.value = newCategory;
+                selectUnite.value = unitedefaut.value;
                 modalUniteButton.removeAttribute("disabled");
             } else {
                 console.error("Erreur lors de l'ajout de la catégorie :", data.message);
@@ -211,6 +218,7 @@ saveCategoryButton.addEventListener("click", async function () {
 // AJOUT UNITE 
 const modalUnite = document.querySelector("#uniteModal");
 const categorieSelectionInput = document.getElementById("categorieSelection");
+const UniteSelectionInput = document.getElementById("selectedUnitInput");
 const newUniteInput = document.getElementById("newUniteInput");
 const newConversionInput = document.getElementById("newConversionInput");
 const saveUniteButton = document.getElementById("saveUniteButton");
@@ -220,6 +228,8 @@ const unitTableBody = document.getElementById("unitTableBody");
 modalUnite.addEventListener("show.bs.modal",async function () {
     const idCategorie = categorie.options[categorie.selectedIndex].value;
     const libelleCategorie = categorie.options[categorie.selectedIndex].textContent;
+    const libelleUnite = unite.options[unite.selectedIndex].textContent;
+    UniteSelectionInput.value = libelleUnite;
     categorieSelectionInput.value = libelleCategorie;
     const response = await fetch(`${WEB_URL}/uniteCategorie`);
     const data = await response.json();
@@ -229,11 +239,27 @@ modalUnite.addEventListener("show.bs.modal",async function () {
 
 const unitDataArray = []; // Tableau pour stocker les données de libelle, de conversion et de catégorie
 
-addUnit.addEventListener("click", function () {
+const addUnitButton = document.getElementById("addUnit"); // Obtenez la référence au bouton "Ajouter"
+
+addUnitButton.addEventListener("click", function () {
     const libelle = newUniteInput.value;
     const conversion = newConversionInput.value;
     const categorieSelection = categorieSelectionInput.value;
+
+    // Vérifier si les champs sont vides
+    if (libelle.trim() === "" || conversion.trim() === "") {
+        alert("Veuillez remplir tous les champs.");
+        return; // Ne rien faire si les champs sont vides
+    }
+
     const idCategorie = categorie.options[categorie.selectedIndex].value;
+
+    // Vérifier si l'unité a déjà été ajoutée
+    const existingUnit = unitDataArray.find(unit => unit.libelle === libelle && unit.conversion === conversion);
+    if (existingUnit) {
+        alert("Cette unité a déjà été ajoutée.");
+        return; // Ne pas ajouter si l'unité existe déjà
+    }
 
     // Ajouter les données au tableau
     unitDataArray.push({ libelle, conversion, idCategorie });
@@ -284,17 +310,17 @@ function deleteUnit(index) {
 
 saveUniteButton.addEventListener("click", async function () {
     try {
-        // Send unitDataArray to the server
+        // Envoyer unitDataArray au serveur
         const data = await Api.postData("http://localhost:8000/api/unite/add", unitDataArray);
 
         console.log(data);
 
         if (data.success) {
-            // Clear the array and table after successful submission
+            // Effacez le tableau et la table après une soumission réussie
             unitDataArray.length = 0;
             unitTableBody.innerHTML = "";
 
-            // Update the select element with newly added units
+            // Mettre à jour l'élément select avec les unités nouvellement ajoutées
             const selectUnite = document.getElementById("unite");
             for (const unit of data) {
                 const option = document.createElement("option");
@@ -340,21 +366,6 @@ validateButton.addEventListener("click", async () => {
 
 //-------------------*********************PARTIE AJOUT FOURNISSEUR *****************
 
-// saveFournisseurButton.addEventListener("click", async function () {
-//     const nom = nomFournisseur.value;
-//     const prenom = prenomFournisseur.value;
-//     const adresse = adresseFournisseur.value;
-//     const telephone = telephoneFournisseur.value;
-//     await Api.postData("http://localhost:8000/api/fournisseur/add",
-//         {
-//             nom: nom,
-//             prenom: prenom,
-//             adresse: adresse,
-//             telephone: telephone,
-
-//         }).then(function (data) { })
-// });
-
 saveFournisseurButton.addEventListener("click", async function () {
     const nomFournisseur = document.getElementById("nomFournisseur");
     const prenomFournisseur = document.getElementById("prenomFournisseur");
@@ -394,9 +405,9 @@ saveFournisseurButton.addEventListener("click", async function () {
 //---------------------------PARTIE RECHERCHE FOURNISSEUR DANS LE INPUT------------------------------------------
 const fournisseurInput = document.getElementById("fournisseurInput");
 const autocompleteContainer = document.getElementById("autocompleteContainer");
+const fournisseurSelectionne = document.getElementById("fournisseurSelectionne");
 let selectedFournisseurs = new Set(); // Stocke les fournisseurs sélectionnés
 let fournisseurs = []; // Stocke la liste complète des fournisseurs
-
 
 async function fetchFournisseurs() {
     try {
@@ -409,10 +420,6 @@ async function fetchFournisseurs() {
 }
 
 fetchFournisseurs(); // Appelle la fonction pour récupérer les fournisseurs au chargement
-
-
-// const selectedFournisseurs = new Set();
-const selectedFournisseursIds = new Set();
 
 function renderAutocompleteOptions(options) {
     autocompleteContainer.innerHTML = "";
@@ -432,17 +439,14 @@ function renderAutocompleteOptions(options) {
 
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
+            checkbox.setAttribute("data-id", fournisseur.id); // Ajout de l'attribut data-id
             checkbox.addEventListener("change", function () {
                 if (this.checked) {
                     selectedFournisseurs.add(fournisseur);
-                    selectedFournisseursIds.add(fournisseur.id);
                 } else {
                     selectedFournisseurs.delete(fournisseur);
-                    selectedFournisseursIds.delete(fournisseur.id);
                 }
-
-                const selectedFournisseursArray = Array.from(selectedFournisseursIds).map(id => ({ id }));
-                console.log(selectedFournisseursArray);
+                updateFournisseurSelectionne(); // Met à jour les fournisseurs sélectionnés
             });
 
             if (selectedFournisseurs.has(fournisseur)) {
@@ -456,30 +460,71 @@ function renderAutocompleteOptions(options) {
     }
 }
 
-// Pour obtenir le tableau d'objets contenant les IDs des fournisseurs sélectionnés
 
+function updateFournisseurSelectionne() {
+    fournisseurSelectionne.innerHTML = "";
 
+    // Appliquer le style flex pour afficher les fournisseurs sur la même ligne
+    fournisseurSelectionne.style.display = "flex";
+    fournisseurSelectionne.style.flexWrap = "wrap"; // Gérer les retours à la ligne si nécessaire
+
+    selectedFournisseurs.forEach(fournisseur => {
+        const selectedOption = document.createElement("div");
+        selectedOption.className = "selected-fournisseur";
+
+        const fournisseurName = document.createElement("span");
+        fournisseurName.textContent = fournisseur.prenom + " " + fournisseur.nom;
+        fournisseurName.style.padding = "10px";
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "delete-button";
+        deleteButton.textContent = "X";
+        deleteButton.style.backgroundColor = "red";
+        deleteButton.style.color = "white";
+        deleteButton.style.border = "none";
+        deleteButton.style.borderRadius = "50%";
+        deleteButton.style.padding = "5px 10px";
+        deleteButton.style.cursor = "pointer";
+
+        deleteButton.addEventListener("click", function () {
+            selectedFournisseurs.delete(fournisseur);
+            const correspondingCheckbox = document.querySelector(`input[type="checkbox"][data-id="${fournisseur.id}"]`);
+            if (correspondingCheckbox) {
+                correspondingCheckbox.checked = false;
+            }
+            updateFournisseurSelectionne(); // Met à jour les fournisseurs sélectionnés
+        });
+
+        selectedOption.appendChild(fournisseurName);
+        selectedOption.appendChild(deleteButton);
+        fournisseurSelectionne.appendChild(selectedOption);
+    });
+}
 
 fournisseurInput.addEventListener("blur", function () {
-    // Sauvegarde des valeurs sélectionnées dans une structure appropriée
     console.log("Fournisseurs sélectionnés :", Array.from(selectedFournisseurs));
 });
 
 fournisseurInput.addEventListener("input", function () {
     const inputValue = this.value.toLowerCase();
-    const filteredFournisseurs = fournisseurs.filter(fournisseur => fournisseur.nom.toLowerCase().includes(inputValue));
+    const filteredFournisseurs = fournisseurs.filter(fournisseur =>
+        fournisseur.nom.toLowerCase().includes(inputValue)
+    );
 
     renderAutocompleteOptions(filteredFournisseurs);
 });
 
 fournisseurInput.addEventListener("keyup", function () {
-    const inputValue = this.value.toLowerCase();
+    const inputValue = this.value.toLowerCase();  
     if (inputValue === "") {
-        const filteredSelectedFournisseurs = Array.from(selectedFournisseurs).filter(fournisseur =>
+        autocompleteContainer.innerHTML = ""; // Vide l'autocomplétion
+        updateFournisseurSelectionne(); // Met à jour les fournisseurs sélectionnés
+    } else {
+        const filteredFournisseurs = fournisseurs.filter(fournisseur =>
             fournisseur.nom.toLowerCase().includes(inputValue)
         );
 
-        renderAutocompleteOptions(filteredSelectedFournisseurs);
+        renderAutocompleteOptions(filteredFournisseurs);
     }
 });
 //-----------------PARTIE RECHERCHE FOURNISSEUR DANS LE INPUT-----------------------------------------

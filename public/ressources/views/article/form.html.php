@@ -9,7 +9,7 @@
                 </div>
                 <div class="mb-4 col-10 d-flex">
                     <select class="form-select me-2" name="categorie" id="categorie">
-                        <option value="" disabled selected>Choisir une catégorie</option>
+                        <option value="" selected>Choisir une catégorie</option>
                     </select>
                     <button type="button" class="btn btn-outline-dark btn-circle" data-bs-toggle="modal" data-bs-target="#categorieModal">+</button>
                     <div class="error-message"></div>
@@ -48,7 +48,10 @@
                     <button type="button" class="btn btn-outline-dark btn-circle" data-bs-toggle="modal" data-bs-target="#fournisseurModal" id="modalFournisseur">+</button>
                     <div class="error-message"></div>
                 </div>
+                <div class="col d-flex justify-content-evenly">
                 <div id="autocompleteContainer"></div>
+                <div id="fournisseurSelectionne"></div>
+                </div>
 
 
 
@@ -65,7 +68,7 @@
                 </div>
             </div>
         </div>
-        <button type="button" class="btn btn-outline-dark mt-3" id="validateButton">Valider</button>
+        <button type="button" class="btn btn-outline-dark mt-3" id="validateButton" disabled>Valider</button>
     </form>
 
     <!-- Modal pour la catégorie -->
