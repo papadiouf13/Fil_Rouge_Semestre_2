@@ -25,5 +25,8 @@ use App\Models\Unite;
       public static function findDetailByCategorie($categorie){
         return parent::find("SELECT * FROM ". self::tableName() . " WHERE categorie=:categorie",["categorie" => $categorie]);
       }
+//       public static function findDetailByCategorie(int $idCategorie){
+//         return parent::query("select * from ".  self::tableName() ." where idCategorie=:idCategorie  ",["idCategorie"=>$idCategorie]);
+//       }
         
  }

@@ -27,6 +27,11 @@ abstract class Controller {
        echo json_encode($data);
     }
 
+    public function renderJson(array $datas) {
+        $jsonArray = json_encode($datas);
+        echo $jsonArray;
+    }
+    
     // public function JsonDecode(){
     //     $json = file_get_contents("php://input");
     //     return json_decode($json, true);
@@ -42,4 +47,5 @@ abstract class Controller {
             return $decoded; // Retourner un objet JSON décodé s'il n'est pas true
         }
     }
+    
 }

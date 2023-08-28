@@ -28,7 +28,7 @@ class UniteController extends Controller
     public function unite()
     {
         $model = new Unite();
-        $selectColumns = ['unite.libelle']; // Colonne(s) que vous souhaitez sélectionner
+        $selectColumns = ['unite.libelle', 'unite.id', 'Unicategorie.conversion']; // Colonne(s) que vous souhaitez sélectionner
 
         $joinConditions = [
             ['table' => 'UniCategorie', 'on' => 'Unite.id = UniCategorie.Unite'],
@@ -67,43 +67,51 @@ class UniteController extends Controller
      *@return mixed
      */
 
-    public function store()
-    {
-        // dd($_POST);
-        $data = json_decode(file_get_contents('php://input'), true);
-        // dd($data);
-        foreach ($data as  $value) {
-
-
-            Validator::isVide($value['libelle'], 'libelle');
-            $response = [];
-            $categorie = $value['idCategorie'];
-            if (Validator::validate()) {
-                try {
-                    $unite = Unite::create([
-                        'libelle' => $value['libelle'],
-
-                    ]);
-
-                    UniCategorie::create([
-                        'unite' => $unite,
-                        'categorie' => $categorie,
-                        'conversion' => $value['conversion']
-                    ]);
-
-
-
-                    $response['success'] = true;
-                    $response['message'] = "Unite ajoutée avec succès";
-                } catch (\PDOException $th) {
-                    $response['success'] = false;
-                    $response['message'] = "Une erreur s'est produite lors de l'ajout de l'unite";
-                }
-            }
-
-            // Envoyer la réponse JSON
-            header('Content-Type: application/json');
-            echo json_encode($response);
-        }
-    }
+     public function store()
+     {
+         $data = json_decode(file_get_contents('php://input'), true);
+         $responseData = []; // Tableau pour stocker les données de la réponse
+     
+         foreach ($data as $value) {
+             $response = [];
+             $categorie = $value['idCategorie'];
+     
+             Validator::isVide($value['libelle'], 'libelle');
+     
+             if (Validator::validate()) {
+                 try {
+                     $unite = Unite::create([
+                         'libelle' => $value['libelle'],
+                     ]);
+     
+                     UniCategorie::create([
+                         'unite' => $unite,
+                         'categorie' => $categorie,
+                         'conversion' => $value['conversion']
+                     ]);
+     
+                     // Ajouter les données de l'unité au tableau de données de la réponse
+                     $responseData[] = [
+                         'libelle' => $value['libelle'],
+                         'conversion' => $value['conversion'],
+                         'idCategorie' => $categorie
+                     ];
+                 } catch (\PDOException $th) {
+                     $response['success'] = false;
+                     $response['message'] = "Une erreur s'est produite lors de l'ajout de l'unite";
+                 }
+             }
+         }
+     
+         // Ajouter la réponse au tableau de données de la réponse
+         $response['success'] = true;
+         $response['message'] = "Unite ajoutée avec succès";
+         $response['data'] = $responseData;
+     
+         // Envoyer la réponse JSON
+         header('Content-Type: application/json');
+         echo json_encode($response);
+     }
+     
+     
 }

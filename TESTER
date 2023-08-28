@@ -1,223 +1,243 @@
 
-//PARTIE CHARGEMENT D'IMAGE
-const photo = document.querySelector('#image');
-const form = document.querySelector(".container form");
-const fields = form.querySelectorAll("input[type='text'], select");
-const validateButton = document.getElementById("validateButton");
+// //PARTIE CHARGEMENT D'IMAGE
+// const photo = document.querySelector('#image');
+// const form = document.querySelector(".container form");
+// const fields = form.querySelectorAll("input[type='text'], select");
+// const validateButton = document.getElementById("validateButton");
 
-photo.addEventListener('change', changeImage);
+// photo.addEventListener('change', changeImage);
 
-function changeImage() {
-    let file = new FileReader();
-    file.readAsDataURL(photo.files[0]);
-    file.onloadend = function (event) {
-        const path = event.target.result;
-        document.querySelector('#photo').setAttribute('src', path);
-    }
-}
-//FIn PARTIE CHARGEMENT D'IMAGE
+// function changeImage() {
+//     let file = new FileReader();
+//     file.readAsDataURL(photo.files[0]);
+//     file.onloadend = function (event) {
+//         const path = event.target.result;
+//         document.querySelector('#photo').setAttribute('src', path);
+//     }
+// }
+// //FIn PARTIE CHARGEMENT D'IMAGE
 
-validateButton.addEventListener("click", function () {
-    let hasEmptyFields = false;
+// validateButton.addEventListener("click", function () {
+//     let hasEmptyFields = false;
 
-    fields.forEach((field) => {
-        const errorMessage = field.parentElement.querySelector(".error-message");
-        if (field.value.trim() === "" || (field.tagName === "SELECT" && field.value === "")) {
-            hasEmptyFields = true;
-            errorMessage.textContent = "Champ obligatoire";
-            errorMessage.style = "color: red"
-        } else {
-            errorMessage.textContent = "";
-        }
-    });
+//     fields.forEach((field) => {
+//         const errorMessage = field.parentElement.querySelector(".error-message");
+//         if (field.value.trim() === "" || (field.tagName === "SELECT" && field.value === "")) {
+//             hasEmptyFields = true;
+//             errorMessage.textContent = "Champ obligatoire";
+//             errorMessage.style = "color: red"
+//         } else {
+//             errorMessage.textContent = "";
+//         }
+//     });
 
-    if (hasEmptyFields) {
-        event.preventDefault();
-    }
-});
-//PARTIE CATEGORIE 
-// Partie Catégorie
-const selectElement = document.getElementById("categorie");
-const selectedCategoriesElement = document.getElementById("selectedCategories");
-let currentSelectedRadio = null;
-const selectedCategoryValueElement = document.getElementById("selectedCategoryValue");
+//     if (hasEmptyFields) {
+//         event.preventDefault();
+//     }
+// });
+// //PARTIE CATEGORIE 
+// // Partie Catégorie
+// const selectElement = document.getElementById("categorie");
+// const selectedCategoriesElement = document.getElementById("selectedCategories");
+// let currentSelectedRadio = null;
+// const selectedCategoryValueElement = document.getElementById("selectedCategoryValue");
 
-fetch("http://localhost:8000/api/categorie")
-    .then(response => response.json())
-    .then(categories => {
-        categories.forEach(category => {
-            const option = document.createElement("option");
-            option.value = category.id;
-            option.textContent = category.libelle;
-            selectElement.appendChild(option);
-        });
-    })
-    .catch(error => {
-        console.error("Erreur lors de la récupération des catégories :", error);
-    });
+// fetch("http://localhost:8000/api/categorie")
+//     .then(response => response.json())
+//     .then(categories => {
+//         categories.forEach(category => {
+//             const option = document.createElement("option");
+//             option.value = category.id;
+//             option.textContent = category.libelle;
+//             selectElement.appendChild(option);
+//         });
+//     })
+//     .catch(error => {
+//         console.error("Erreur lors de la récupération des catégories :", error);
+//     });
 
-selectElement.addEventListener("change", function () {
-    const selectedValue = selectElement.value;
+// selectElement.addEventListener("change", function () {
+//     const selectedValue = selectElement.value;
 
-    if (currentSelectedRadio) {
-        selectedCategoriesElement.removeChild(currentSelectedRadio);
-        currentSelectedRadio = null;
-    }
+//     if (currentSelectedRadio) {
+//         selectedCategoriesElement.removeChild(currentSelectedRadio);
+//         currentSelectedRadio = null;
+//     }
 
-    if (selectedValue) {
-        const radio = document.createElement('input');
-        radio.type = "radio";
-        radio.name = "selectedCategory";
-        radio.checked = true;
+//     if (selectedValue) {
+//         const radio = document.createElement('input');
+//         radio.type = "radio";
+//         radio.name = "selectedCategory";
+//         radio.checked = true;
 
-        const label = document.createElement('label');
-        label.appendChild(document.createTextNode(selectedValue));
-        label.appendChild(radio);
+//         const label = document.createElement('label');
+//         label.appendChild(document.createTextNode(selectedValue));
+//         label.appendChild(radio);
 
-        radio.addEventListener("change", function () {
-            if (!radio.checked) {
-                currentSelectedRadio = null;
-            } else {
-                currentSelectedRadio = label;
-            }
-        });
+//         radio.addEventListener("change", function () {
+//             if (!radio.checked) {
+//                 currentSelectedRadio = null;
+//             } else {
+//                 currentSelectedRadio = label;
+//             }
+//         });
 
-        selectedCategoriesElement.appendChild(label);
-        currentSelectedRadio = label;
+//         selectedCategoriesElement.appendChild(label);
+//         currentSelectedRadio = label;
 
-        selectedCategoryValueElement.textContent = selectedValue;
+//         selectedCategoryValueElement.textContent = selectedValue;
 
-    }
-});
+//     }
+// });
 
 
 
-const newCategoryInput = document.getElementById("newCategoryInput");
-const saveCategoryButton = document.getElementById("saveCategoryButton");
+// const newCategoryInput = document.getElementById("newCategoryInput");
+// const saveCategoryButton = document.getElementById("saveCategoryButton");
 
-saveCategoryButton.addEventListener("click", function () {
-    const newCategory = newCategoryInput.value;
-    if (newCategory) {
-        fetch("http://localhost:8000/api/categorie/add", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ libelle: newCategory })
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                if (data.success) {
-                    const option = document.createElement("option");
-                    option.value = newCategory;
-                    option.textContent = newCategory;
-                    selectElement.appendChild(option);
-                    newCategoryInput.value = "";
-                } else {
-                    console.error("Erreur lors de l'ajout de la catégorie :", data.message);
-                }
-            })
-            .catch(error => {
-                console.error("Erreur lors de l'ajout de la catégorie :", error);
-            });
-    }
-});
-// Ajout d'unités
-const selectElementUnite = document.getElementById("unite");
-const selectedUnitesElement = document.getElementById("selectedUnites");
-let currentSelectedRadioUnite = null;
+// saveCategoryButton.addEventListener("click", function () {
+//     const newCategory = newCategoryInput.value;
+//     if (newCategory) {
+//         fetch("http://localhost:8000/api/categorie/add", {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json"
+//             },
+//             body: JSON.stringify({ libelle: newCategory })
+//         })
+//             .then(response => response.json())
+//             .then(data => {
+//                 console.log(data);
+//                 if (data.success) {
+//                     const option = document.createElement("option");
+//                     option.value = newCategory;
+//                     option.textContent = newCategory;
+//                     selectElement.appendChild(option);
+//                     newCategoryInput.value = "";
+//                 } else {
+//                     console.error("Erreur lors de l'ajout de la catégorie :", data.message);
+//                 }
+//             })
+//             .catch(error => {
+//                 console.error("Erreur lors de l'ajout de la catégorie :", error);
+//             });
+//     }
+// });
+// // Ajout d'unités
+// const selectElementUnite = document.getElementById("unite");
+// const selectedUnitesElement = document.getElementById("selectedUnites");
+// let currentSelectedRadioUnite = null;
 
-fetch("http://localhost:8000/api/unite")
-    .then(response => response.json())
-    .then(unites => {
-        unites.forEach(unite => {
-            const option = document.createElement("option");
-            option.value = unite.libelle;
-            option.textContent = unite.libelle;
-            selectElementUnite.appendChild(option);
-        });
-    })
-    .catch(error => {
-        console.error("Erreur lors de la récupération des unités :", error);
-    });
+// fetch("http://localhost:8000/api/unite")
+//     .then(response => response.json())
+//     .then(unites => {
+//         unites.forEach(unite => {
+//             const option = document.createElement("option");
+//             option.value = unite.libelle;
+//             option.textContent = unite.libelle;
+//             selectElementUnite.appendChild(option);
+//         });
+//     })
+//     .catch(error => {
+//         console.error("Erreur lors de la récupération des unités :", error);
+//     });
 
-selectElementUnite.addEventListener("change", function () {
-    const selectedValueUnite = selectElementUnite.value;
+// selectElementUnite.addEventListener("change", function () {
+//     const selectedValueUnite = selectElementUnite.value;
 
-    if (currentSelectedRadioUnite) {
-        selectedUnitesElement.removeChild(currentSelectedRadioUnite);
-        currentSelectedRadioUnite = null;
-    }
+//     if (currentSelectedRadioUnite) {
+//         selectedUnitesElement.removeChild(currentSelectedRadioUnite);
+//         currentSelectedRadioUnite = null;
+//     }
 
-    if (selectedValueUnite) {
-        const radioUnite = document.createElement('input');
-        radioUnite.type = "radio";
-        radioUnite.name = "selectedUnite";
-        radioUnite.checked = true;
+//     if (selectedValueUnite) {
+//         const radioUnite = document.createElement('input');
+//         radioUnite.type = "radio";
+//         radioUnite.name = "selectedUnite";
+//         radioUnite.checked = true;
 
-        const labelUnite = document.createElement('label');
-        labelUnite.appendChild(document.createTextNode(selectedValueUnite));
-        labelUnite.appendChild(radioUnite);
+//         const labelUnite = document.createElement('label');
+//         labelUnite.appendChild(document.createTextNode(selectedValueUnite));
+//         labelUnite.appendChild(radioUnite);
 
-        radioUnite.addEventListener("change", function () {
-            if (!radioUnite.checked) {
-                currentSelectedRadioUnite = null;
-            } else {
-                currentSelectedRadioUnite = labelUnite;
-            }
-        });
+//         radioUnite.addEventListener("change", function () {
+//             if (!radioUnite.checked) {
+//                 currentSelectedRadioUnite = null;
+//             } else {
+//                 currentSelectedRadioUnite = labelUnite;
+//             }
+//         });
 
-        selectedUnitesElement.appendChild(labelUnite);
-        currentSelectedRadioUnite = labelUnite;
-    }
-});
+//         selectedUnitesElement.appendChild(labelUnite);
+//         currentSelectedRadioUnite = labelUnite;
+//     }
+// });
 
+// const newUniteInput = document.getElementById("newUniteInput");
+// const newConversionInput = document.getElementById("newConversionInput");
+// const saveUniteButton = document.getElementById("saveUniteButton");
+
+// saveUniteButton.addEventListener("click", function () {
+//     const newUnite = newUniteInput.value;
+//     const newConversion = newConversionInput.value;
+//     const selectedCategory = selectedCategoryValueElement.textContent;
+
+//     if (newUnite && newConversion && selectedCategory) {
+//         // console.log("newUnite :", newUnite);
+//         // console.log("newConversion :", newConversion);
+//         // console.log("selectedCategory :", selectedCategory);
+//         fetch("http://localhost:8000/api/unite/add", {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json"
+//             },
+//             body: JSON.stringify({
+//                 libelle: newUnite,
+//                 conversion: newConversion,
+//                 categorie: selectedCategory // Utilisation de l'ID de catégorie récupéré
+//             })
+//         })
+//             .then(response => response.json())
+//             .then(data => {
+//                 if (data.success) {
+//                     console.log(data);
+//                     const option = document.createElement("option");
+//                     option.value = newUnite;
+//                     option.textContent = newUnite;
+//                     selectElementUnite.appendChild(option);
+//                     newUniteInput.value = "";
+//                     newConversionInput.value = "";
+//                     selectedCategoryValueElement.textContent = "";
+//                     // categorie = selectedCategory;
+//                     console.log("Unité ajoutée avec succès !");
+//                 } else {
+//                     console.error("Erreur lors de l'ajout de l'unité :", data.message);
+//                 }
+//             })
+//             .catch(error => {
+//                 console.error("Erreur lors de l'ajout de l'unité :", error);
+//             });
+//     }
+// });
+
+
+const modalUnite = document.querySelector("#uniteModal");
+const categorieSelectionInput = document.getElementById("categorieSelection");
+const UniteSelectionInput = document.getElementById("selectedUnitInput");
 const newUniteInput = document.getElementById("newUniteInput");
 const newConversionInput = document.getElementById("newConversionInput");
 const saveUniteButton = document.getElementById("saveUniteButton");
+const unitTableBody = document.getElementById("unitTableBody");
 
-saveUniteButton.addEventListener("click", function () {
-    const newUnite = newUniteInput.value;
-    const newConversion = newConversionInput.value;
-    const selectedCategory = selectedCategoryValueElement.textContent;
 
-    if (newUnite && newConversion && selectedCategory) {
-        // console.log("newUnite :", newUnite);
-        // console.log("newConversion :", newConversion);
-        // console.log("selectedCategory :", selectedCategory);
-        fetch("http://localhost:8000/api/unite/add", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                libelle: newUnite,
-                conversion: newConversion,
-                categorie: selectedCategory // Utilisation de l'ID de catégorie récupéré
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log(data);
-                    const option = document.createElement("option");
-                    option.value = newUnite;
-                    option.textContent = newUnite;
-                    selectElementUnite.appendChild(option);
-                    newUniteInput.value = "";
-                    newConversionInput.value = "";
-                    selectedCategoryValueElement.textContent = "";
-                    // categorie = selectedCategory;
-                    console.log("Unité ajoutée avec succès !");
-                } else {
-                    console.error("Erreur lors de l'ajout de l'unité :", data.message);
-                }
-            })
-            .catch(error => {
-                console.error("Erreur lors de l'ajout de l'unité :", error);
-            });
-    }
+modalUnite.addEventListener("show.bs.modal",async function () {
+    const idCategorie = categorie.options[categorie.selectedIndex].value;
+    const libelleCategorie = categorie.options[categorie.selectedIndex].textContent;
+    const libelleUnite = unite.options[unite.selectedIndex].textContent;
+    UniteSelectionInput.value = libelleUnite;
+    categorieSelectionInput.value = libelleCategorie;
+    const response = await fetch(`${WEB_URL}/uniteCategorie`);
+    const data = await response.json();
+    console.log(data);
+    selectedUnitInput.value = data[0].libelle;
 });
-
-

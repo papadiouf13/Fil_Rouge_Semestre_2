@@ -41,9 +41,9 @@ public function create(){
 
 public function store() {
     // dd($_POST);
-    $data = json_decode(file_get_contents('php://input'),true);
+    $data = json_decode(file_get_contents('php://input'), true);
     Validator::isVide($data['libelle'], 'libelle');
-    $response = []; // Initialiser une réponse JSON
+    $response = []; // Initialize a JSON response
 
     if (Validator::validate()) {
         try {
@@ -58,21 +58,29 @@ public function store() {
             UniCategorie::create([
                 'unite' => $unite,
                 'categorie' => $categorie,
-                'conversion' => $data['conversion'],
+                'conversion' => 1,        
             ]);
+            
             $response['success'] = true;
             $response['message'] = "Catégorie ajoutée avec succès";
+            $response['dataCategorie'] = [
+                'libelleCategorie' => $data['libelle'],
+                'idCategorie' => $categorie,
+                'libelleUnite' => $data['unite'],
+                'idUnite' => $unite,
+                'conversion' => 1
+            ];
         } catch (\PDOException $th) {
             $response['success'] = false;
             $response['message'] = "Une erreur s'est produite lors de l'ajout de la catégorie";
         }
     }
 
-    // Envoyer la réponse JSON
+    // Send JSON response
     header('Content-Type: application/json');
     echo json_encode($response);
-    
 }
+
 
 
 }
