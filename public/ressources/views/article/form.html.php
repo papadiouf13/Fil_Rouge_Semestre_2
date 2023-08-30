@@ -1,69 +1,69 @@
 <div class="container">
-<form class="container mt-5" method="post" action="<?= WEB_URL ?>" enctype="    ">
-    <div class="col d-flex">
-        <div class="col-6">
-            <div class="mb-4 col-10">
-                <input type="text" class="form-control" placeholder="Libelle" name="libelle" id="libelle">
-                <div id="message"></div>
-                <div class="error-message"></div>
-            </div>
-            <div class="mb-4 col-10 d-flex">
-                <select class="form-select me-2" name="categorie" id="categorie">
-                    <option value="" selected>Choisir une catégorie</option>
-                </select>
-                <button type="button" class="btn btn-outline-dark btn-circle" data-bs-toggle="modal" data-bs-target="#categorieModal">+</button>
-                <div class="error-message"></div>
-            </div>
-            <div id="selectedCategories" class="mt-2">
-                <!-- Les catégories sélectionnées seront affichées ici -->
-            </div>
-            <div class="mb-4 col-10 d-flex">
-                <div class="col">
-                    <input type="text" class="form-control" placeholder="Quantité" name="quantite" id="quantite">
+    <form class="container mt-5" method="post" action="<?= WEB_URL ?>" enctype="    ">
+        <div class="col d-flex">
+            <div class="col-6">
+                <div class="mb-4 col-10">
+                    <input type="text" class="form-control" placeholder="Libelle" name="libelle" id="libelle">
+                    <div id="message"></div>
                     <div class="error-message"></div>
                 </div>
-                <div class="mb-2 col">
-                    <div class="d-flex">
-                        <select class="form-select me-2" name="unite" id="unite">
-                            <option value="" disabled selected>Choisir une unité</option>
-                        </select>
-                        <button type="button" class="btn btn-outline-dark btn-circle" data-bs-toggle="modal" data-bs-target="#uniteModal" id="modalUnite" disabled>+</button>
+                <div class="mb-4 col-10 d-flex">
+                    <select class="form-select me-2" name="categorie" id="categorie">
+                        <option value="" selected>Choisir une catégorie</option>
+                    </select>
+                    <button type="button" class="btn btn-outline-dark btn-circle" data-bs-toggle="modal" data-bs-target="#categorieModal">+</button>
+                    <div class="error-message"></div>
+                </div>
+                <div id="selectedCategories" class="mt-2">
+                    <!-- Les catégories sélectionnées seront affichées ici -->
+                </div>
+                <div class="mb-4 col-10 d-flex">
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="Quantité" name="quantite" id="quantite">
                         <div class="error-message"></div>
                     </div>
-                    <!-- Les unités sélectionnées seront affichées ici -->
-                    <div id="selectedUnites" class="mt-2"></div>
+                    <div class="mb-2 col">
+                        <div class="d-flex">
+                            <select class="form-select me-2" name="unite" id="unite">
+                                <option value="" disabled selected>Choisir une unité</option>
+                            </select>
+                            <button type="button" class="btn btn-outline-dark btn-circle" data-bs-toggle="modal" data-bs-target="#uniteModal" id="modalUnite" disabled>+</button>
+                            <div class="error-message"></div>
+                        </div>
+                        <!-- Les unités sélectionnées seront affichées ici -->
+                        <div id="selectedUnites" class="mt-2"></div>
+                    </div>
+                </div>
+                <div class="mb-3 col-10">
+                    <input type="text" class="form-control" placeholder="Prix" name="prix" id="prix">
+                    <div class="error-message"></div>
                 </div>
             </div>
-            <div class="mb-3 col-10">
-                <input type="text" class="form-control" placeholder="Prix" name="prix" id="prix">
-                <div class="error-message"></div>
+            <div class="col-6">
+                <div class="mb-3 col-10 d-flex">
+                    <input type="text" class="form-control me-2" id="fournisseurInput" placeholder="Saisissez un fournisseur">
+                    <button type="button" class="btn btn-outline-dark btn-circle" data-bs-toggle="modal" data-bs-target="#fournisseurModal" id="modalFournisseur">+</button>
+                    <div class="error-message"></div>
+                </div>
+                <div class="col d-flex justify-content-evenly">
+                    <div id="autocompleteContainer"></div>
+                    <div id="fournisseurSelectionne"></div>
+                </div>
+                <div class="col d-flex">
+                    <div class="mb-3 d-flex flex-column">
+                        <input type="file" name="photo" style="display:none;" id="image">
+                        <label for="image" class="form-label">
+                            <img id="photo" src="./../../../ressources/images/images_choice.jpg" alt="" style="width: 180px;height:180px;">
+                        </label>
+                    </div>
+                    <div class="col p-5">
+                        <p id="references">References : </p>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-6">
-            <div class="mb-3 col-10 d-flex">
-                <input type="text" class="form-control me-2" id="fournisseurInput" placeholder="Saisissez un fournisseur">
-                <button type="button" class="btn btn-outline-dark btn-circle" data-bs-toggle="modal" data-bs-target="#fournisseurModal" id="modalFournisseur">+</button>
-                <div class="error-message"></div>
-            </div>
-            <div class="col d-flex justify-content-evenly">
-                <div id="autocompleteContainer"></div>
-                <div id="fournisseurSelectionne"></div>
-            </div>
-            <div class="col d-flex">
-                <div class="mb-3 d-flex flex-column">
-                    <input type="file" name="photo" style="display:none;" id="image" >
-                    <label for="image" class="form-label">
-                        <img id="photo" src="./../../../ressources/images/images_choice.jpg" alt=""  style="width: 180px;height:180px;">
-                    </label>
-                </div>
-                <div class="col p-5">
-                    <p id="references">References : </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <button type="button" class="btn btn-outline-dark mt-3" id="validateButton" disabled>Valider</button>
-</form>
+        <button type="button" class="btn btn-outline-dark mt-3" id="validateButton" disabled>Valider</button>
+    </form>
 
     <!-- Modal pour la catégorie -->
     <div class="modal fade" id="categorieModal" tabindex="-1" aria-labelledby="categorieModalLabel" aria-hidden="true">
@@ -173,11 +173,9 @@
         <thead class="bg-dark text-white">
             <tr>
                 <th scope="col">Libellé</th>
-                <th scope="col">Catégorie</th>
-                <th scope="col">Quantité</th>
                 <th scope="col">Prix</th>
-                <th scope="col">Fournisseur</th>
-                <th scope="col">Unité</th>
+                <th scope="col">Quantité</th>
+                <th scope="col">References</th>
                 <th scope="col">Action</th>
             </tr>
         </thead>
@@ -201,6 +199,11 @@
             </tr> -->
         </tbody>
     </table>
+    <div id="pagination" class="d-flex justify-content-end  align-items-center">
+        <button id="prevPage" class="btn btn-outline-secondary">Précédent</button>
+        <span id="currentPage">Page 1</span>
+        <button id="nextPage" class="btn btn-outline-dark">Suivant</button>
+    </div>
 
 </div>
 

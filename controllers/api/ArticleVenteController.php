@@ -2,16 +2,18 @@
 
 namespace App\Controllers\Api;
 
-
 use App\Core\Validator;
 use App\Core\Controller;
 use App\Models\Fournisseur;
+use App\Models\ArticleVente;
 use App\Models\FourniArticle;
-use App\Models\ArticleConfection;
 
 
 
-class ArticleConfectionController extends Controller
+
+
+
+class ArticleVenteController extends Controller
 {
 
     /** 
@@ -22,7 +24,7 @@ class ArticleConfectionController extends Controller
     public function index()
     {
         // die('tioukh');
-        $this->JsonEncode(ArticleConfection::all());
+        $this->JsonEncode(ArticleVente::all());
         // dd($datas);
 
     }
@@ -36,6 +38,8 @@ class ArticleConfectionController extends Controller
     {
     }
 
+
+    
     /** 
      *
      *@return mixed
@@ -45,7 +49,6 @@ class ArticleConfectionController extends Controller
     {
         $response['article'] = [];
         $data = json_decode(file_get_contents('php://input'), true);
-        // dd($data);
         $response = ['success' => false, 'message' => '', 'article' => [], 'fournisseurs' => []];
         define('ROUTE', 'C:\Users\MAMADOU DIOUF\Desktop\Fil_Rouge_Semestre_2/public/ressources/images/');
 
@@ -57,11 +60,11 @@ class ArticleConfectionController extends Controller
             try {
                 $uploadPath = ROUTE . $data['cheminImage'];
                 file_put_contents($uploadPath, $data['cheminImage']);
-                $valeurQuantite = $data['quantite']*$data['conversion'];
-                $article = ArticleConfection::create([
+
+                $article = ArticleVente::create([
                     'libelle' => $data['libelle'],
                     'prix' => $data['prix'],
-                    'quantite' => $valeurQuantite,
+                    'quantite' => $data['quantite'],
                     'photo' => $data['photo'],
                     'idunite' => $data['idunite'],
                     'idcategorie' => $data['idcategorie'],
@@ -91,7 +94,6 @@ class ArticleConfectionController extends Controller
                     'idunite' => $data['idunite'],
                     'idcategorie' => $data['idcategorie'],
                     'reference' => $data['references'],
-                    'conversion' => $data['conversion'],    
                     'fournisseurs' => $fournisseursDetails,
                     'photo' => $data['photo'],
                 ];

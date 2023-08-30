@@ -30,7 +30,17 @@ public function index() {
 public function create(){
 
 }
-
+public function Conversion()
+{
+    // dd('salammmmmm');
+    // dd('dougounan');
+    $data = json_decode(file_get_contents('php://input'), true);
+    $convert = 
+    [
+            'conversion' => UniCategorie::findUNICONVERSION($data['id'])
+    ];
+    $this->JsonEncode($convert);
+}
 /** 
 *
 *@return mixed

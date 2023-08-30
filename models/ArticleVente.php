@@ -4,15 +4,15 @@ use App\Core\Model;
 use App\Models\Unite;
 use App\Models\Categorie;
 
-class ArticleConfection extends Model {
+class ArticleVente extends Model {
     public int $id;
     public string $libelle;
     public float $prix;
-    public float $quantite;
+    public int $quantite;
     public string $photo;
     public string $reference;
     protected static function tableName(){
-        return "article_confection";
+        return "article_vente";
        }
 
    

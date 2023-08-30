@@ -43,13 +43,34 @@ class UniteController extends Controller
         $this->JsonEncode($results);
     }
 
+    public function unitepardefaut()
+    {
+        $model = new Unite();
+        $selectColumns = ['unite.libelle', 'unite.id', 'Unicategorie.conversion']; // Colonne(s) que vous souhaitez sélectionner
+
+        $joinConditions = [
+            ['table' => 'UniCategorie', 'on' => 'Unite.id = UniCategorie.Unite'],
+            ['table' => 'Categorie', 'on' => 'UniCategorie.Categorie = Categorie.id']
+        ];
+        $whereConditions = [
+            'Categorie.id =' => $_SESSION['id'],
+            'unite.etat =' => 1
+        ];
+
+        $results = $model->findByJoinAndConditions($selectColumns, 'unite', $joinConditions, $whereConditions);
+        $this->JsonEncode($results);
+    }
+
+
     public function categoryID()
     {
         $data = json_decode(file_get_contents('php://input'), true);
         $id = $data['categorieID'];
         $_SESSION['id'] = $id;
+        $this->JsonEncode(["id " => $id]);
         //    dd($_SESSION['id']);
     }
+
 
 
 

@@ -39,6 +39,10 @@ abstract class Model extends BaseDeDonnees
     {
         return self::query('SELECT * FROM ' . static::tableName() . ' WHERE id = :id', ["id" => $id], true);
     }
+    public static function findUNICONVERSION($id)
+    {
+        return self::query('SELECT conversion FROM  unicategorie  WHERE id = :id', ["id" => $id], true);
+    }
 
     // SELECT * 
     // FROM unite

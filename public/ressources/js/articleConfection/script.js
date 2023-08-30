@@ -1,5 +1,6 @@
 import { Api } from "./../core/api.js";
 import { WEB_URL } from "./../core/bootstrap.js";
+const tbodyarticleconfection = document.getElementById("tableauArticleConfection");
 
 window.addEventListener("load", async function () {
     // alert('ok');
@@ -44,16 +45,37 @@ window.addEventListener("load", async function () {
     // console.log(data);
     const tbodyarticleconfection = document.getElementById("tableauArticleConfection"); // Assurez-vous d'avoir un élément avec l'ID "tbodycategorie"
 
+    // const tbodyarticleconfection = document.getElementById("tableauArticleConfection");
+const prevPageButton = document.getElementById("prevPage");
+const nextPageButton = document.getElementById("nextPage");
+const currentPageSpan = document.getElementById("currentPage");
+
+// Exemple de tableau de données (remplacez ceci par vos données réelles)
+// const data2 = [
+//     { libelle: "Produit 1", prix: 10, quantite: 20, idcategorie: "Catégorie A" },
+//     { libelle: "Produit 2", prix: 15, quantite: 5, idcategorie: "Catégorie B" },
+//     // ... Ajoutez d'autres éléments ici
+// ];
+
+const itemsPerPage = 3; // Nombre d'éléments par page
+let currentPage = 1;    // Page actuelle
+
+// Fonction pour générer le contenu du tableau en fonction de la pagination
+function generateTable() {
     tbodyarticleconfection.innerHTML = "";
-    for (let cat of data2) {
-        tbodyarticleconfection.innerHTML += `
-            <tr class="">
-                <th scope="row">${cat['id']}</th>
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+
+    for (let i = startIndex; i < Math.min(endIndex, data2.length); i++) {
+        const cat = data2[i];
+        
+        const row = `
+            <tr>
                 <td>${cat['libelle']}</td>
-                <th scope="row">${cat['prix']}</th>
+                <td>${cat['prix']}</td>
                 <td>${cat['quantite']}</td>
-                <th scope="row">${cat['idcategorie']}</th>
-                <td>${cat['idunite']}</td>
+                <td>${cat['reference']}</td>
                 <td>
                     <button class="btn btn-primary">
                         <i class="fas fa-edit"></i>
@@ -64,7 +86,38 @@ window.addEventListener("load", async function () {
                 </td>
             </tr>
         `;
+
+        tbodyarticleconfection.innerHTML += row;
     }
+
+    updatePageIndicator();
+}
+
+// Mettre à jour l'indicateur de page
+function updatePageIndicator() {
+    currentPageSpan.textContent = `Page ${currentPage}`;
+}
+
+// Gérer le clic sur le bouton "Précédent"
+prevPageButton.addEventListener("click", () => {
+    if (currentPage > 1) {
+        currentPage--;
+        generateTable();
+    }
+});
+
+// Gérer le clic sur le bouton "Suivant"
+nextPageButton.addEventListener("click", () => {
+    const startIndex = currentPage * itemsPerPage;
+    if (startIndex < data2.length) {
+        currentPage++;
+        generateTable();
+    }
+});
+
+// Appeler la fonction pour générer le contenu initial du tableau
+generateTable();
+
    
 
 
@@ -166,21 +219,55 @@ categorie.addEventListener('change', async function () {
 
 })
 
+// categorie.addEventListener('change', async () => {
+//     const response1 = await fetch(`${WEB_URL}/uniteCategorie`);
+//     const data1 = await response1.json();
+//     console.log(data1);
+
+//     // Effacer les options existantes du sélecteur d'unités
+//     const SelectUnite = document.getElementById("unite");
+//     SelectUnite.innerHTML = "";
+
+//     // Ajouter les nouvelles options basées sur la catégorie sélectionnée
+//     data1.forEach(element => {
+//         const option = document.createElement("option");
+//         console.log(option.libelle);
+//         option.value = element.id;
+//         option.textContent = element.libelle;
+//         option.conversion = element.conversion;
+//         console.log(option.conversion);
+//         SelectUnite.appendChild(option);
+//     });
+// });
+let conversion = ""
+
 categorie.addEventListener('change', async () => {
     const response1 = await fetch(`${WEB_URL}/uniteCategorie`);
+    const response2 = await fetch(`${WEB_URL}/unitepardefautCategorie`);
     const data1 = await response1.json();
-    console.log(data1);
-
+    const data2 = await response2.json();
+    conversion = data2[0].conversion;
+    console.log(conversion);
     // Effacer les options existantes du sélecteur d'unités
     const SelectUnite = document.getElementById("unite");
+    SelectUnite.addEventListener("change",async () => {
+        const data = await Api.postData("http://localhost:8000/api/conversion", {
+        id: SelectUnite.value,
+        
+    });
+
+    conversion = data['conversion']['conversion'];
+    console.log(conversion);
+    })
     SelectUnite.innerHTML = "";
 
     // Ajouter les nouvelles options basées sur la catégorie sélectionnée
     data1.forEach(element => {
         const option = document.createElement("option");
-        console.log(option.libelle);
         option.value = element.id;
         option.textContent = element.libelle;
+        option.conversion = element.conversion;
+        console.log(option.conversion);
         SelectUnite.appendChild(option);
     });
 });
@@ -602,8 +689,13 @@ quantite.addEventListener("input", checkArticleAndCategory);
 // --------------*************FIN PARTIE DE VALIDATION DU BOUTON VALIDER*****************---------------------------
 
 // --------------*************PARTIE ENREGISTREMENT D'ARTICLE DE CONFECTION *****************---------------------------
+categorie.addEventListener("change", checkArticleAndCategory);
+libelleInput.addEventListener("input", checkArticleAndCategory);
+prix.addEventListener("input", checkArticleAndCategory);
+quantite.addEventListener("input", checkArticleAndCategory);
 validateButton.addEventListener("click", async () => {
     try {
+        console.log('yessssss');
         const libelleArticle = libelleInput.value;
         const prixArticle = prix.value;
         const quantiteArticle = quantite.value;
@@ -620,13 +712,36 @@ validateButton.addEventListener("click", async () => {
             idfournisseur: selectedFournisseursArray,
             references: REFERENCES,
             photo: photo, 
+            conversion: conversion, 
             cheminImage: cheminImage
         };
 
         const response = await Api.postData("http://localhost:8000/api/article/add", articleData);
+         
+            tbodyarticleconfection.innerHTML += `
+                <tr class="">
+                <td>${articleData['libelle']}</td>
+                <th scope="row">${articleData['prix']}</th>
+                <td>${articleData['quantite']}</td>
+                <td>${articleData['references']}</td>
+                    <td>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
 
+            libelleInput.value = "";
+            prix.value = "";
+            quantite.value = "";
+            validateButton.setAttribute("disabled", "disabled");
         if (response.success) {
             console.log("Article ajouté avec succès :", response.message);
+
             
         } else {
             console.error("Erreur lors de l'ajout de l'article :", response.message);
