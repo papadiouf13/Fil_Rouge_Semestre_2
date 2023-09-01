@@ -103,6 +103,6 @@ class ArticleConfectionController extends Controller
         }
 
         // echo json_encode($response['article'], TRUE);
-        $this->renderJson($response['article']);
+        echo json_encode($response);
     }
 }

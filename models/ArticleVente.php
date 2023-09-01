@@ -1,7 +1,7 @@
 <?php 
 namespace App\Models;
 use App\Core\Model;
-use App\Models\Unite;
+use App\Models\taille;
 use App\Models\Categorie;
 
 class ArticleVente extends Model {
@@ -22,18 +22,18 @@ class ArticleVente extends Model {
 
         public function __construct(){
             $this->categorieModel = new Categorie();
-            $this->uniteModel = new Unite();
+            $this->tailleModel = new Taille();
         }
        //Navigation 
        public function categorie(){
         return $this->categorieModel->find($this->idcategorie);
        }
-       public int $idunite;
-       public Unite $uniteModel ;
+       public int $idtaille;
+       public Taille $tailleModel ;
 
       
-      public function unite(){
-       return $this->uniteModel->find($this->idunite);
+      public function taille(){
+       return $this->tailleModel->find($this->idtaille);
       }
 
    

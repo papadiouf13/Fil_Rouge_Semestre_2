@@ -72,7 +72,7 @@
       <li>
     <div class="profile-details">
       <div class="profile-content">
-        <img src="image/profile.jpg" alt="profileImg">
+        <img src="../../ressources/images/images_choice.jpg" alt="profileImg">
       </div>
       <div class="name-job">
         <div class="profile_name">Mamadou Diouf</div>

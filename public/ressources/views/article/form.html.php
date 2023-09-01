@@ -200,8 +200,8 @@
         </tbody>
     </table>
     <div id="pagination" class="d-flex justify-content-end  align-items-center">
-        <button id="prevPage" class="btn btn-outline-secondary">Précédent</button>
-        <span id="currentPage">Page 1</span>
+        <button id="prevPage" class="btn btn-outline-secondary m-4">Précédent</button>
+        <!-- <span id="currentPage">Page 1</span> -->
         <button id="nextPage" class="btn btn-outline-dark">Suivant</button>
     </div>
 

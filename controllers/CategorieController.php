@@ -17,7 +17,7 @@ class CategorieController extends Controller {
 
 public function index() {
     // die('SALAM');
-    $datas = Categorie::all();
+    $datas = Categorie::allcategorie();
     // dd($datas);
     $this -> view('categorie/liste',["datas" => $datas]);
 }

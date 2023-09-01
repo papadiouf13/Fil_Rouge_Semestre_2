@@ -19,9 +19,9 @@
                     <i class='bx bxs-chevron-down arrow'></i>
                 </div>
                 <ul class="sub-menu">
-                    <li><a href="<?= WEB_ROUTE . "?controller=categorieController&view=categorie" ?>">Ajouter
+                    <li><a href="<?= WEB_URL . "?controller=categorieController&view=categorie" ?>">Ajouter
                             Categorie</a></li>
-                    <li><a href="<?= WEB_ROUTE . "?controller=categorieController&view=categorie_list" ?>">Liste
+                    <li><a href="<?= WEB_URL . "?controller=categorieController&view=categorie_list" ?>">Liste
                             Categorie</a></li>
                 </ul>
             </li>
@@ -34,9 +34,9 @@
                     <i class='bx bxs-chevron-down arrow'></i>
                 </div>
                 <ul class="sub-menu">
-                    <li><a href="<?= WEB_ROUTE . "?controller=fournisseur&view=fournisseur" ?>">Ajouter Fournisseur</a>
+                    <li><a href="<?= WEB_URL . "?controller=fournisseur&view=fournisseur" ?>">Ajouter Fournisseur</a>
                     </li>
-                    <li><a href="<?= WEB_ROUTE . "?controller=fournisseur&view=fournisseur_list" ?>">Liste
+                    <li><a href="<?= WEB_URL . "?controller=fournisseur&view=fournisseur_list" ?>">Liste
                             Fournisseur</a></li>
                 </ul>
             </li>
@@ -49,9 +49,9 @@
                     <i class='bx bxs-chevron-down arrow'></i>
                 </div>
                 <ul class="sub-menu">
-                    <li><a href="<?= WEB_ROUTE . "?controller=approvisionnement&view=approvisionnement" ?>">Ajouter
+                    <li><a href="<?= WEB_URL . "?controller=approvisionnement&view=approvisionnement" ?>">Ajouter
                             Approvisionnement</a></li>
-                    <li><a href="<?= WEB_ROUTE . "?controller=approvisionnement&view=approvisionnement_list" ?>">Liste
+                    <li><a href="<?= WEB_URL . "?controller=approvisionnement&view=approvisionnement_list" ?>">Liste
                             Approvisionnement</a></li>
                 </ul>
             </li>
@@ -64,9 +64,9 @@
                     <i class='bx bxs-chevron-down arrow'></i>
                 </div>
                 <ul class="sub-menu">
-                    <li><a href="<?= WEB_ROUTE . "?controller=articleConfectionController&view=add_article" ?>">Ajouter
+                    <li><a href="<?= WEB_URL . "?controller=articleConfectionController&view=add_article" ?>">Ajouter
                             Art Confection</a></li>
-                    <li><a href="<?= WEB_ROUTE . "?controller=articleConfectionController&view=article_list" ?>">Liste
+                    <li><a href="<?= WEB_URL . "?controller=articleConfectionController&view=article_list" ?>">Liste
                             Art Confection</a></li>
                 </ul>
             </li>
@@ -79,9 +79,9 @@
                     <i class='bx bxs-chevron-down arrow'></i>
                 </div>
                 <ul class="sub-menu">
-                    <li><a href="<?= WEB_ROUTE . "?controller=catventeController&view=categorievente" ?>">Ajouter
+                    <li><a href="<?= WEB_URL . "?controller=catventeController&view=categorievente" ?>">Ajouter
                             Categorie Vente</a></li>
-                    <li><a href="<?= WEB_ROUTE . "?controller=catventeController&view=categorievente_list" ?>">Liste
+                    <li><a href="<?= WEB_URL . "?controller=catventeController&view=categorievente_list" ?>">Liste
                             Categorie Vente</a></li>
                 </ul>
 
@@ -96,9 +96,9 @@
                     <i class='bx bxs-chevron-down arrow'></i>
                 </div>
                 <ul class="sub-menu">
-                    <li><a href="<?= WEB_ROUTE . "?controller=articleVenteController&view=add_article" ?>">Ajouter
+                    <li><a href="<?= WEB_URL . "?controller=articleVenteController&view=add_article" ?>">Ajouter
                             Article Vente</a></li>
-                    <li><a href="<?= WEB_ROUTE . "?controller=articleVenteController&view=article_list" ?>">Liste
+                    <li><a href="<?= WEB_URL . "?controller=articleVenteController&view=article_list" ?>">Liste
                             Article Vente</a></li>
                 </ul>
 
@@ -115,7 +115,7 @@
             <li>
                 <div class="profile-details">
                     <div class="profile-content">
-                        <img src="images/profile.jpg.png" alt="profileImg">
+                        <img src="../../../ressources/images/images_choice.jpg" alt="profileImg">
                     </div>
                     <div class="name-job">
                         <div class="profile_name">Mamadou Diouf</div>

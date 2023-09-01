@@ -90,13 +90,13 @@ function generateTable() {
         tbodyarticleconfection.innerHTML += row;
     }
 
-    updatePageIndicator();
+    // updatePageIndicator();
 }
 
 // Mettre à jour l'indicateur de page
-function updatePageIndicator() {
-    currentPageSpan.textContent = `Page ${currentPage}`;
-}
+// function updatePageIndicator() {
+//     currentPageSpan.textContent = `Page ${currentPage}`;
+// }
 
 // Gérer le clic sur le bouton "Précédent"
 prevPageButton.addEventListener("click", () => {
@@ -219,26 +219,6 @@ categorie.addEventListener('change', async function () {
 
 })
 
-// categorie.addEventListener('change', async () => {
-//     const response1 = await fetch(`${WEB_URL}/uniteCategorie`);
-//     const data1 = await response1.json();
-//     console.log(data1);
-
-//     // Effacer les options existantes du sélecteur d'unités
-//     const SelectUnite = document.getElementById("unite");
-//     SelectUnite.innerHTML = "";
-
-//     // Ajouter les nouvelles options basées sur la catégorie sélectionnée
-//     data1.forEach(element => {
-//         const option = document.createElement("option");
-//         console.log(option.libelle);
-//         option.value = element.id;
-//         option.textContent = element.libelle;
-//         option.conversion = element.conversion;
-//         console.log(option.conversion);
-//         SelectUnite.appendChild(option);
-//     });
-// });
 let conversion = ""
 
 categorie.addEventListener('change', async () => {
@@ -339,7 +319,7 @@ modalUnite.addEventListener("show.bs.modal",async function () {
     const response = await fetch(`${WEB_URL}/uniteCategorie`);
     const data = await response.json();
     console.log(data);
-    selectedUnitInput.value = data.dataCategorie.libelleUnite;
+    // selectedUnitInput.value = data.dataCategorie.libelleUnite;
 });
 
 const unitDataArray = []; // Tableau pour stocker les données de libelle, de conversion et de catégorie

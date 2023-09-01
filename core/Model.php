@@ -34,6 +34,16 @@ abstract class Model extends BaseDeDonnees
         return self::query('SELECT * FROM ' . static::tableName());
     }
 
+    public static function allcategorie()
+    {
+        return self::query('SELECT * FROM ' . static::tableName() . ' WHERE etat = 0');
+    }
+
+    public static function allcategorieVente()
+    {
+        return self::query('SELECT * FROM ' . static::tableName() . ' WHERE etat = 1');
+    }
+
 
     public static function find($id)
     {

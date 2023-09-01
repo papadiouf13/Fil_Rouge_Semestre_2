@@ -18,11 +18,17 @@ class CategorieController extends Controller {
 
 public function index() {
     // die('SALAM');
-    $this ->JsonEncode(Categorie::all());
+    $this ->JsonEncode(Categorie::allcategorie());
 }
+
+public function categorieVente() {
+    // die('SALAM');
+    $this ->JsonEncode(Categorie::allcategorieVente());
+}
+
 public function unite() {
     // die('SALAM');
-    $this ->JsonEncode(Categorie::all());
+    $this ->JsonEncode(Categorie::allcategorie());
 }
 
 /** 
@@ -48,7 +54,7 @@ public function store() {
     if (Validator::validate()) {
         try {
             $categorie = Categorie::create([
-                'libelle' => $data['libelle']
+                'libelle' => $data['libelle'],
             ]);
 
             $unite = Unite::create([
@@ -81,6 +87,37 @@ public function store() {
     echo json_encode($response);
 }
 
+public function storeCategorieVente() {
+    // dd($_POST);
+    $data = json_decode(file_get_contents('php://input'), true);
+    Validator::isVide($data['libelle'], 'libelle');
+    $response = []; // Initialize a JSON response
 
+    if (Validator::validate()) {
+        try {
+            $categorie = Categorie::create([
+                'libelle' => $data['libelle'],
+                'etat' => 1
+            ]);
+
+           
+            
+            $response['success'] = true;
+            $response['message'] = "Catégorie ajoutée avec succès";
+            $response['dataCategorie'] = [
+                'libelleCategorie' => $data['libelle'],
+                'idCategorie' => $categorie,
+                
+            ];
+        } catch (\PDOException $th) {
+            $response['success'] = false;
+            $response['message'] = "Une erreur s'est produite lors de l'ajout de la catégorie";
+        }
+    }
+
+    // Send JSON response
+    header('Content-Type: application/json');
+    echo json_encode($response);
+}
 
 }
