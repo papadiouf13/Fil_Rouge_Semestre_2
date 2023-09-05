@@ -144,7 +144,7 @@
                     <th scope="col">Action</th>
                 </tr>
             </thead>
-            <tbody id="tableauArticleConfection">
+            <tbody id="tableauArticleVente">
                 <tr>
                     <td>Produit 2</td>
                     <td>Catégorie B</td>

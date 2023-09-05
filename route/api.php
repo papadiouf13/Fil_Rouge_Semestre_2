@@ -26,4 +26,5 @@ Router::route("/api/fournisseur/add",[FournisseurController::class,'store']);
 Router::route("/api/unitepardefautCategorie",[UniteController::class,'unitepardefaut']);
 Router::route("/api/conversion",[UniCategorieController::class,'Conversion']);
 Router::route("/api/CategorieTaille",[TailleController::class,'Taille']);
+Router::route("/api/articleVente/add",[ArticleVenteController::class,'store']);
 

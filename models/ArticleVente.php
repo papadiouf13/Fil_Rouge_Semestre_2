@@ -1,8 +1,6 @@
 <?php 
 namespace App\Models;
 use App\Core\Model;
-use App\Models\taille;
-use App\Models\Categorie;
 
 class ArticleVente extends Model {
     public int $id;

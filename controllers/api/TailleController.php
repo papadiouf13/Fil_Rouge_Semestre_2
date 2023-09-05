@@ -28,8 +28,8 @@ class TailleController extends Controller
     public function Taille()
     {
         $model = new taille();
-        $selectColumns = ['Categorie.libelle AS categorie_libelle', 'Taille.libelle AS taille_libelle'];
-
+        $selectColumns = ['Categorie.libelle AS categorie_libelle', 'Taille.libelle AS taille_libelle', 'Taille.id AS id'];
+        
         $joinConditions = [
             ['table' => 'CategorieTaille', 'on' => 'Categorie.id = CategorieTaille.idCategorie'],
             ['table' => 'Taille', 'on' => 'CategorieTaille.idTaille = Taille.id']

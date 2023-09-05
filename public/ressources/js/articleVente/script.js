@@ -1,5 +1,6 @@
 import { Api } from "./../core/api.js";
 import { WEB_URL } from "./../core/bootstrap.js";
+const tbodyarticleVente = document.getElementById("tableauArticleVente");
 
 // PARTIE LIBELLE EXISTE OU PAS DANS LA BASE DE DONNEES
 
@@ -263,6 +264,7 @@ savetailleButton.addEventListener("click", async function () {
 // document.addEventListener("DOMContentLoaded", function() {
 const articleInput = document.querySelector(".article");
 const quantiteInput = document.querySelector(".quantite");
+const margeInput = document.querySelector("#marge"); // Ajout de l'élément pour la marge
 const messageDiv = document.getElementById("messageDiv");
 const addRowButton = document.getElementById("addRowButton");
 
@@ -271,7 +273,7 @@ articleInput.addEventListener("input", async function () {
 });
 
 let totalGlobal = 0;
-
+let tableauQuantiteArticle = [];
 quantiteInput.addEventListener("blur", function () {
     const value = this.value;
     const prix = parseFloat(quantiteInput.getAttribute("data-prix"));
@@ -280,10 +282,15 @@ quantiteInput.addEventListener("blur", function () {
         messageDiv.textContent = "";
         const total = value * prix;
         console.log(total);
-        messageDiv.textContent = `Total: ${total.toFixed(2)}`;
+        messageDiv.textContent = "";
 
         // Mettez à jour le total global
         totalGlobal += total;
+
+        tableauQuantiteArticle.push({
+            article: articleInput.value,
+            quantite: quantiteInput.value
+        });
 
         // Mettez à jour l'input coutproduction
         updateCoutProductionInput();
@@ -292,15 +299,32 @@ quantiteInput.addEventListener("blur", function () {
         messageDiv.textContent = "La quantité doit être un nombre.";
     }
 });
+
+margeInput.addEventListener("input", function () {
+    updatePrixVenteInput(); // Appeler la fonction pour mettre à jour le Prix de Vente
+});
+
 function updateCoutProductionInput() {
     const coutProductionInput = document.getElementById("coutproduction");
     coutProductionInput.value = totalGlobal.toFixed(2);
+    updatePrixVenteInput(); // Appeler la fonction pour mettre à jour le Prix de Vente lorsque le Cout de Production change
+}
+function updatePrixVenteInput() {
+    const coutProduction = parseFloat(document.getElementById("coutproduction").value);
+    const marge = parseFloat(margeInput.value);
+
+    if (!isNaN(coutProduction) && !isNaN(marge)) {
+        const prixVenteInput = document.getElementById("PrixVente");
+        const prixVente = coutProduction + marge;
+        prixVenteInput.value = prixVente.toFixed(2);
+    }
 }
 
 addRowButton.addEventListener("click", function () {
     addNewColumn();
     addRowButton.disabled = true;
 });
+
 // });
 
 async function checkArticle(libelle, messageDiv, quantiteInput, addRowButton) {
@@ -319,7 +343,8 @@ async function checkArticle(libelle, messageDiv, quantiteInput, addRowButton) {
             const quantiteValue = parseFloat(quantiteInput.value);
             if (!isNaN(quantiteValue)) {
                 const total = quantiteValue * article.prix;
-                messageDiv.textContent = `Total: ${total.toFixed(2)}`;
+                messageDiv.textContent = "";
+                // messageDiv.textContent = `Total: ${total.toFixed(2)}`;
             } else {
                 messageDiv.textContent = '';
             }
@@ -338,6 +363,7 @@ async function checkArticle(libelle, messageDiv, quantiteInput, addRowButton) {
         addRowButton.disabled = true;
     }
 }
+
 
 function addNewColumn() {
     const tableBody = document.querySelector("#articleTable tbody");
@@ -372,19 +398,98 @@ function addNewColumn() {
             messageDiv.textContent = "";
             const total = value * prix;
             console.log(total);
-            messageDiv.textContent = `Total: ${total.toFixed(2)}`;
+            messageDiv.textContent = "";
+            // messageDiv.textContent = `Total: ${total.toFixed(2)}`;
             totalGlobal += total;
 
-        // Mettez à jour l'input coutproduction
-        updateCoutProductionInput();
+            // Mettez à jour les tableaux quantiteArticle et articleConfection
+            tableauQuantiteArticle.push({
+                article: articleInput.value,
+                quantite: quantiteInput.value
+            });
+
+            // Mettez à jour l'input coutproduction
+            updateCoutProductionInput();
         } else {
             addRowButton.disabled = true;
             messageDiv.textContent = "La quantité doit être un nombre.";
         }
     });
 }
-
-
-
-
 // ------------------------****************FIN PARTIE TABLEAU**************------------------------------------
+
+//----------------********************PARTIE REFERENCE**************------------------------------
+let REFERENCES = "";
+const categorieInput = document.getElementById("categorie");
+const referencesInput = document.getElementById("references"); // Changer le type d'élément en "input"
+
+// ...
+
+function updateReferences() {
+    const libelleValue = libelleInput.value.substring(0, 3).toUpperCase();
+    const categorieValue = categorieInput.options[categorieInput.selectedIndex].text.substring(0, 3).toUpperCase();
+
+    const reference = `${libelleValue}-${categorieValue}-000`;
+    referencesInput.value = reference; // Utilisez .value pour définir la valeur du champ de saisie
+
+    REFERENCES = reference;
+}
+
+libelleInput.addEventListener("input", updateReferences);
+categorieInput.addEventListener("change", updateReferences);
+
+//----------------******************** FIN PARTIE REFERENCE**************------------------------------
+
+const validateButton = document.getElementById("validateButton");
+validateButton.addEventListener("click", async () => {
+    try {
+        console.log('yessssss');
+        const libelleArticle = libelleInput.value;
+        const categorieArticle = categorie.value;
+        const selecttailleArticle = taille.value;
+        const marge = margeInput.value;
+        const prixVenteInput = document.getElementById("PrixVente");
+        const prixVente = prixVenteInput.value;
+
+        const articleData = {
+            libelle: libelleArticle,
+            idcategorie: categorieArticle,
+            idtaille: selecttailleArticle,
+            references: REFERENCES,
+            photo: photo,
+            marge: marge,
+            prixvente: prixVente,
+            ArticleQuantite:tableauQuantiteArticle,
+            cheminImage: cheminImage,
+        };
+
+        const response = await Api.postData("http://localhost:8000/api/articleVente/add", articleData);
+
+        tbodyarticleVente.innerHTML += `
+                <tr class="">
+                <td>${articleData['libelle']}</td>
+                <td>${articleData['references']}</td>
+                    <td>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+
+        libelleInput.value = "";
+        validateButton.setAttribute("disabled", "disabled");
+        if (response.success) {
+            console.log("Article ajouté avec succès :", response.message);
+
+
+        } else {
+            console.error("Erreur lors de l'ajout de l'article :", response.message);
+        }
+    } catch (erreur) {
+        console.error("Une erreur s'est produite lors de l'ajout de l'article :", erreur);
+    }
+});
