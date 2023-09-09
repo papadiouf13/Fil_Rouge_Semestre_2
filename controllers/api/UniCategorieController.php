@@ -55,7 +55,7 @@ public function store() {
     if (Validator::validate()) {
         try {
             $unite = Unite::create([
-                'libelle' => $data['libelle'],
+                'libelleUnite' => $data['libelle'],
                 'conversion' => $data['conversion']
             ]);
 

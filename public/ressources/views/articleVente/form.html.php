@@ -44,12 +44,13 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="breukh">
                             <tr>
                                 <td>
                                     <div class="input-group">
                                         <input type="text" class="form-control article" placeholder="Article">
                                         <input type="text" class="form-control quantite" placeholder="Quantite" disabled>
+                                        <input type="text" class="form-control unite" placeholder="Unite" id="unit" disabled>
                                     </div>
                                     <div id="messageDiv"></div>
                                 </td>
@@ -57,8 +58,6 @@
                         </tbody>
                     </table>
                 </div>
-
-
                 <div class="col-10 d-flex">
                     <div class="mb-3 d-flex flex-column">
                         <input type="file" name="photo" style="display:none;" id="image">
@@ -72,7 +71,7 @@
                     </div>
 
                 </div>
-                <button type="button" class="btn btn-outline-dark " id="validateButton">Enregistrer</button>
+                <button type="button" class="btn btn-outline-dark " id="validateButton" disabled>Enregistrer</button>
             </div>
     </form>
 
@@ -98,8 +97,25 @@
         </div>
     </div>
 
-     <!-- Modal pour la taille -->
-     <div class="modal fade" id="tailleModal" tabindex="-1" aria-labelledby="tailleModalLabel" aria-hidden="true">
+    <!-- Modal pour Detail -->
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form action="">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="detailModalLabel">DETAIL DE L'ARTICLE</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body d-flex justify-content-center" id="modalDetailArtticle">
+                        
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal pour la taille -->
+    <div class="modal fade" id="tailleModal" tabindex="-1" aria-labelledby="tailleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -107,7 +123,7 @@
                 </div>
                 <div class="modal-body">
                     <input type="text" class="form-control" placeholder="Categorie Selectionnée" id="categorieSelection" disabled>
-                    
+
                     <div class="col d-flex justify-content-around mt-3">
                         <input type="text" class="form-control" placeholder="Nom de la taille" id="newtailleInput" name="libelle">
                         <button type="button" class="btn btn-outline-dark btn-circle" id="addUnit">+</button>
@@ -133,19 +149,22 @@
         </div>
     </div>
 
+
+
+
     <div class="col-6">
         <table class="table mt-3">
             <thead class="bg-dark text-white">
                 <tr>
                     <th scope="col">Libellé</th>
                     <th scope="col">Prix</th>
-                    <th scope="col">Quantité</th>
-                    <th scope="col">References</th>
+                    <th scope="col">Reference</th>
+                    <th scope="col">Details</th>
                     <th scope="col">Action</th>
                 </tr>
             </thead>
             <tbody id="tableauArticleVente">
-                <tr>
+                <!-- <tr>
                     <td>Produit 2</td>
                     <td>Catégorie B</td>
                     <td>5</td>
@@ -158,9 +177,14 @@
                             <i class="fas fa-trash-alt"></i>
                         </button>
                     </td>
-                </tr>
+                </tr> -->
             </tbody>
         </table>
+    </div>
+    <div id="pagination" class="d-flex justify-content-end  align-items-center">
+        <button id="prevPage" class="btn btn-outline-secondary m-4">Précédent</button>
+        <!-- <span id="currentPage">Page 1</span> -->
+        <button id="nextPage" class="btn btn-outline-dark">Suivant</button>
     </div>
 </div>
 

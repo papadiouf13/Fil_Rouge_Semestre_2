@@ -46,31 +46,23 @@ window.addEventListener("load", async function () {
     const tbodyarticleconfection = document.getElementById("tableauArticleConfection"); // Assurez-vous d'avoir un élément avec l'ID "tbodycategorie"
 
     // const tbodyarticleconfection = document.getElementById("tableauArticleConfection");
-const prevPageButton = document.getElementById("prevPage");
-const nextPageButton = document.getElementById("nextPage");
-const currentPageSpan = document.getElementById("currentPage");
+    const prevPageButton = document.getElementById("prevPage");
+    const nextPageButton = document.getElementById("nextPage");
+    const currentPageSpan = document.getElementById("currentPage");
+    const itemsPerPage = 3; // Nombre d'éléments par page
+    let currentPage = 1;    // Page actuelle
 
-// Exemple de tableau de données (remplacez ceci par vos données réelles)
-// const data2 = [
-//     { libelle: "Produit 1", prix: 10, quantite: 20, idcategorie: "Catégorie A" },
-//     { libelle: "Produit 2", prix: 15, quantite: 5, idcategorie: "Catégorie B" },
-//     // ... Ajoutez d'autres éléments ici
-// ];
+    // Fonction pour générer le contenu du tableau en fonction de la pagination
+    function generateTable() {
+        tbodyarticleconfection.innerHTML = "";
 
-const itemsPerPage = 3; // Nombre d'éléments par page
-let currentPage = 1;    // Page actuelle
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
 
-// Fonction pour générer le contenu du tableau en fonction de la pagination
-function generateTable() {
-    tbodyarticleconfection.innerHTML = "";
+        for (let i = startIndex; i < Math.min(endIndex, data2.length); i++) {
+            const cat = data2[i];
 
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-
-    for (let i = startIndex; i < Math.min(endIndex, data2.length); i++) {
-        const cat = data2[i];
-        
-        const row = `
+            const row = `
             <tr>
                 <td>${cat['libelle']}</td>
                 <td>${cat['prix']}</td>
@@ -87,41 +79,30 @@ function generateTable() {
             </tr>
         `;
 
-        tbodyarticleconfection.innerHTML += row;
+            tbodyarticleconfection.innerHTML += row;
+        }
+
+        // updatePageIndicator();
     }
+    // Gérer le clic sur le bouton "Précédent"
+    prevPageButton.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            generateTable();
+        }
+    });
 
-    // updatePageIndicator();
-}
+    // Gérer le clic sur le bouton "Suivant"
+    nextPageButton.addEventListener("click", () => {
+        const startIndex = currentPage * itemsPerPage;
+        if (startIndex < data2.length) {
+            currentPage++;
+            generateTable();
+        }
+    });
 
-// Mettre à jour l'indicateur de page
-// function updatePageIndicator() {
-//     currentPageSpan.textContent = `Page ${currentPage}`;
-// }
-
-// Gérer le clic sur le bouton "Précédent"
-prevPageButton.addEventListener("click", () => {
-    if (currentPage > 1) {
-        currentPage--;
-        generateTable();
-    }
-});
-
-// Gérer le clic sur le bouton "Suivant"
-nextPageButton.addEventListener("click", () => {
-    const startIndex = currentPage * itemsPerPage;
-    if (startIndex < data2.length) {
-        currentPage++;
-        generateTable();
-    }
-});
-
-// Appeler la fonction pour générer le contenu initial du tableau
-generateTable();
-
-   
-
-
-
+    // Appeler la fonction pour générer le contenu initial du tableau
+    generateTable();
 
 })
 // PARTIE LIBELLE EXISTE OU PAS DANS LA BASE DE DONNEES
@@ -186,7 +167,7 @@ inputValid.addEventListener("change", onChangeImage);
 let photo = ""; // Ajoutez cette ligne pour initialiser la variable photo en dehors de la fonction onChangeImage
 let cheminImage = ""; // Ajoutez cette ligne pour initialiser la variable
 function onChangeImage() {
-// console.log(inputValid.files[0]);
+    // console.log(inputValid.files[0]);
     cheminImage = inputValid.files[0]['name'];
     let f = new FileReader();
     f.readAsDataURL(inputValid.files[0]);
@@ -230,22 +211,22 @@ categorie.addEventListener('change', async () => {
     console.log(conversion);
     // Effacer les options existantes du sélecteur d'unités
     const SelectUnite = document.getElementById("unite");
-    SelectUnite.addEventListener("change",async () => {
+    SelectUnite.addEventListener("change", async () => {
         const data = await Api.postData("http://localhost:8000/api/conversion", {
-        id: SelectUnite.value,
-        
-    });
+            id: SelectUnite.value,
 
-    conversion = data['conversion']['conversion'];
-    console.log(conversion);
+        });
+
+        conversion = data['conversion']['conversion'];
+        console.log(conversion);
     })
     SelectUnite.innerHTML = "";
 
     // Ajouter les nouvelles options basées sur la catégorie sélectionnée
     data1.forEach(element => {
         const option = document.createElement("option");
-        option.value = element.id;
-        option.textContent = element.libelle;
+        option.value = element.idUnite;
+        option.textContent = element.libelleUnite;
         option.conversion = element.conversion;
         console.log(option.conversion);
         SelectUnite.appendChild(option);
@@ -309,8 +290,8 @@ const saveUniteButton = document.getElementById("saveUniteButton");
 const unitTableBody = document.getElementById("unitTableBody");
 
 
-modalUnite.addEventListener("show.bs.modal",async function () {
-   
+modalUnite.addEventListener("show.bs.modal", async function () {
+
     const idCategorie = categorie.options[categorie.selectedIndex].value;
     const libelleCategorie = categorie.options[categorie.selectedIndex].textContent;
     const libelleUnite = unite.options[unite.selectedIndex].textContent;
@@ -405,24 +386,24 @@ saveUniteButton.addEventListener("click", async function () {
             // Effacez le tableau et la table après une soumission réussie
             unitDataArray.length = 0;
             unitTableBody.innerHTML = "";
-        
+
             // Mettre à jour l'élément select avec les unités nouvellement ajoutées
             const selectUnite = document.getElementById("unite");
             let optionsHTML = "";
-        
+
             data.data.forEach(element => {
                 optionsHTML += `<option value="${element.idCategorie}">${element.libelle}</option>`;
             });
-        
+
             // Remplacer le contenu actuel de l'élément select avec les nouvelles options
             selectUnite.innerHTML += optionsHTML;
-        
+
             console.log("Unités ajoutées avec succès !");
         } else {
             console.error("Erreur lors de l'ajout des unités :", data.message);
         }
-        
-        
+
+
     } catch (error) {
         console.error("Erreur lors de l'ajout des unités :", error);
     }
@@ -612,7 +593,7 @@ fournisseurInput.addEventListener("input", function () {
 });
 
 fournisseurInput.addEventListener("keyup", function () {
-    const inputValue = this.value.toLowerCase();  
+    const inputValue = this.value.toLowerCase();
     if (inputValue === "") {
         autocompleteContainer.innerHTML = "";
         updateFournisseurSelectionne();
@@ -642,7 +623,7 @@ async function checkArticleAndCategory() {
 
         const response = await fetch("http://localhost:8000/api/article");
         const data = await response.json();
-        
+
         const articleExists = data.some(article => article.libelle.toLowerCase() === libelleArticle.toLowerCase());
         const isCategorieSelected = categorieArticle !== "";
         const isPriceValid = prixArticle > 0;
@@ -691,14 +672,14 @@ validateButton.addEventListener("click", async () => {
             idunite: selectUniteArticle,
             idfournisseur: selectedFournisseursArray,
             references: REFERENCES,
-            photo: photo, 
-            conversion: conversion, 
+            photo: photo,
+            conversion: conversion,
             cheminImage: cheminImage
         };
 
         const response = await Api.postData("http://localhost:8000/api/article/add", articleData);
-         
-            tbodyarticleconfection.innerHTML += `
+
+        tbodyarticleconfection.innerHTML += `
                 <tr class="">
                 <td>${articleData['libelle']}</td>
                 <th scope="row">${articleData['prix']}</th>
@@ -715,14 +696,14 @@ validateButton.addEventListener("click", async () => {
                 </tr>
             `;
 
-            libelleInput.value = "";
-            prix.value = "";
-            quantite.value = "";
-            validateButton.setAttribute("disabled", "disabled");
+        libelleInput.value = "";
+        prix.value = "";
+        quantite.value = "";
+        validateButton.setAttribute("disabled", "disabled");
         if (response.success) {
             console.log("Article ajouté avec succès :", response.message);
 
-            
+
         } else {
             console.error("Erreur lors de l'ajout de l'article :", response.message);
         }

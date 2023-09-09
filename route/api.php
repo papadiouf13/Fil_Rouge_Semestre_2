@@ -27,4 +27,12 @@ Router::route("/api/unitepardefautCategorie",[UniteController::class,'uniteparde
 Router::route("/api/conversion",[UniCategorieController::class,'Conversion']);
 Router::route("/api/CategorieTaille",[TailleController::class,'Taille']);
 Router::route("/api/articleVente/add",[ArticleVenteController::class,'store']);
+Router::route("/api/articleInput",[ArticleConfectionController::class,'indexArticle']);
+Router::route("/api/articlevente",[ArticleVenteController::class,'index']);
+Router::route("/api/article/detail",[ArticleVenteController::class,'detail']);
+Router::route("/api/article/detailArticleVente",[ArticleVenteController::class,'DetailsArticleVente']);
+
+
+
+
 

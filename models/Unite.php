@@ -16,7 +16,7 @@ use App\Core\Model;
         //Formalisme
         //[visibilite(private(-)|public(+)|protected(#)) ] type(php 8>) $attribut
          public int $id;
-         public string $libelle;
+         public string $libelleUnite;
          public string $conversion;
          protected  static function tableName(){
           return "unite";
@@ -43,44 +43,5 @@ use App\Core\Model;
         
 
 
-         /**
-          * Get the value of id
-          */ 
-         public function getId()
-         {
-                  return $this->id;
-         }
-
-         /**
-          * Set the value of id
-          *
-          * @return  self
-          */ 
-         public function setId($id)
-         {
-          if ($id>0) {
-            $this->id = $id;
-          }
-                  return $this;
-         }
-
-         /**
-          * Get the value of libelle
-          */ 
-         public function getLibelle()
-         {
-                  return $this->libelle;
-         }
-
-         /**
-          * Set the value of libelle
-          *
-          * @return  self
-          */ 
-         public function setLibelle($libelle)
-         {
-                  $this->libelle = $libelle;
-
-                  return $this;
-         }
+     
  }

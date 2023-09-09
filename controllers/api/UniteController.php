@@ -28,10 +28,10 @@ class UniteController extends Controller
     public function unite()
     {
         $model = new Unite();
-        $selectColumns = ['unite.libelle', 'unite.id', 'Unicategorie.conversion']; // Colonne(s) que vous souhaitez sélectionner
+        $selectColumns = ['unite.libelleUnite', 'unite.idUnite', 'Unicategorie.conversion']; // Colonne(s) que vous souhaitez sélectionner
 
         $joinConditions = [
-            ['table' => 'UniCategorie', 'on' => 'Unite.id = UniCategorie.Unite'],
+            ['table' => 'UniCategorie', 'on' => 'Unite.idUnite = UniCategorie.Unite'],
             ['table' => 'Categorie', 'on' => 'UniCategorie.Categorie = Categorie.id']
         ];
         $whereConditions = [
@@ -46,10 +46,10 @@ class UniteController extends Controller
     public function unitepardefaut()
     {
         $model = new Unite();
-        $selectColumns = ['unite.libelle', 'unite.id', 'Unicategorie.conversion']; // Colonne(s) que vous souhaitez sélectionner
+        $selectColumns = ['unite.libelleUnite', 'unite.idUnite', 'Unicategorie.conversion']; // Colonne(s) que vous souhaitez sélectionner
 
         $joinConditions = [
-            ['table' => 'UniCategorie', 'on' => 'Unite.id = UniCategorie.Unite'],
+            ['table' => 'UniCategorie', 'on' => 'Unite.idUnite = UniCategorie.Unite'],
             ['table' => 'Categorie', 'on' => 'UniCategorie.Categorie = Categorie.id']
         ];
         $whereConditions = [
@@ -102,7 +102,7 @@ class UniteController extends Controller
              if (Validator::validate()) {
                  try {
                      $unite = Unite::create([
-                         'libelle' => $value['libelle'],
+                         'libelleUnite' => $value['libelle'],
                      ]);
      
                      UniCategorie::create([

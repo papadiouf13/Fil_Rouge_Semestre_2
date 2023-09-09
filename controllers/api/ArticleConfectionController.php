@@ -26,6 +26,13 @@ class ArticleConfectionController extends Controller
         // dd($datas);
 
     }
+    public function indexArticle()
+    {
+        // die('tioukh');
+        $this->JsonEncode(ArticleConfection::allArticleInput());
+        // dd($datas);
+
+    }
 
     /** 
      *
@@ -50,8 +57,6 @@ class ArticleConfectionController extends Controller
         define('ROUTE', 'C:\Users\MAMADOU DIOUF\Desktop\Fil_Rouge_Semestre_2/public/ressources/images/');
 
         Validator::isVide($data['libelle'], 'libelle');
-        Validator::isVide($data['prix'], 'prix');
-        Validator::isVide($data['quantite'], 'quantite');
 
         if (Validator::validate()) {
             try {
@@ -67,6 +72,7 @@ class ArticleConfectionController extends Controller
                     'idcategorie' => $data['idcategorie'],
                     'reference' => $data['references']
                 ]);
+                // dd($article);
 
                 $fournisseursDetails = [];
                 foreach ($data['idfournisseur'] as $value) {
@@ -96,6 +102,7 @@ class ArticleConfectionController extends Controller
                     'photo' => $data['photo'],
                 ];
             } catch (\PDOException $th) {
+                dd($th);
                 $response['message'] = "Une erreur s'est produite lors de l'ajout de l'article.";
             }
         } else {

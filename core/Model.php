@@ -34,6 +34,14 @@ abstract class Model extends BaseDeDonnees
         return self::query('SELECT * FROM ' . static::tableName());
     }
 
+    public static function allArticleInput()
+{
+    $query = 'SELECT * FROM ' . static::tableName() . ' a ';
+    $query .= 'INNER JOIN unite u ON a.idunite = u.idUnite';
+
+    return self::query($query);
+}
+
     public static function allcategorie()
     {
         return self::query('SELECT * FROM ' . static::tableName() . ' WHERE etat = 0');
@@ -51,7 +59,7 @@ abstract class Model extends BaseDeDonnees
     }
     public static function findUNICONVERSION($id)
     {
-        return self::query('SELECT conversion FROM  unicategorie  WHERE id = :id', ["id" => $id], true);
+        return self::query('SELECT conversion FROM  unicategorie  WHERE unite = :id', ["id" => $id], true);
     }
 
     // SELECT * 

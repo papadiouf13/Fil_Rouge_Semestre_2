@@ -264,12 +264,13 @@ savetailleButton.addEventListener("click", async function () {
 // document.addEventListener("DOMContentLoaded", function() {
 const articleInput = document.querySelector(".article");
 const quantiteInput = document.querySelector(".quantite");
-const margeInput = document.querySelector("#marge"); // Ajout de l'élément pour la marge
+const margeInput = document.querySelector("#marge");
 const messageDiv = document.getElementById("messageDiv");
 const addRowButton = document.getElementById("addRowButton");
+const uniteInput = document.querySelector(".unite"); // Ajoutez cette ligne pour obtenir l'élément d'entrée "Unite"
 
 articleInput.addEventListener("input", async function () {
-    await checkArticle(this.value, messageDiv, quantiteInput, addRowButton);
+    await checkArticle(this.value, messageDiv, quantiteInput, uniteInput, addRowButton); // Incluez uniteInput
 });
 
 let totalGlobal = 0;
@@ -284,15 +285,14 @@ quantiteInput.addEventListener("blur", function () {
         console.log(total);
         messageDiv.textContent = "";
 
-        // Mettez à jour le total global
         totalGlobal += total;
 
         tableauQuantiteArticle.push({
+            id: idArticle,
             article: articleInput.value,
             quantite: quantiteInput.value
         });
 
-        // Mettez à jour l'input coutproduction
         updateCoutProductionInput();
     } else {
         addRowButton.disabled = true;
@@ -301,13 +301,13 @@ quantiteInput.addEventListener("blur", function () {
 });
 
 margeInput.addEventListener("input", function () {
-    updatePrixVenteInput(); // Appeler la fonction pour mettre à jour le Prix de Vente
+    updatePrixVenteInput();
 });
 
 function updateCoutProductionInput() {
     const coutProductionInput = document.getElementById("coutproduction");
     coutProductionInput.value = totalGlobal.toFixed(2);
-    updatePrixVenteInput(); // Appeler la fonction pour mettre à jour le Prix de Vente lorsque le Cout de Production change
+    updatePrixVenteInput();
 }
 function updatePrixVenteInput() {
     const coutProduction = parseFloat(document.getElementById("coutproduction").value);
@@ -325,44 +325,90 @@ addRowButton.addEventListener("click", function () {
     addRowButton.disabled = true;
 });
 
-// });
 
-async function checkArticle(libelle, messageDiv, quantiteInput, addRowButton) {
+// });
+let idArticle = "";
+async function checkArticle(libelle, messageDiv, quantiteInput, uniteInput, addRowButton) {
     try {
-        const response = await fetch(`http://localhost:8000/api/article`);
+        const response = await fetch(`http://localhost:8000/api/articleInput`);
         const data = await response.json();
 
         const article = data.find(article => article.libelle.toLowerCase() === libelle.toLowerCase());
 
         if (article) {
-            messageDiv.textContent = '';
-            messageDiv.style.color = 'green';
-            quantiteInput.removeAttribute("disabled");
-            quantiteInput.setAttribute("data-prix", article.prix);
+            const articleId = article.id;
 
-            const quantiteValue = parseFloat(quantiteInput.value);
-            if (!isNaN(quantiteValue)) {
-                const total = quantiteValue * article.prix;
-                messageDiv.textContent = "";
-                // messageDiv.textContent = `Total: ${total.toFixed(2)}`;
+            // Vérifier si l'article a déjà été ajouté
+            if (tableauQuantiteArticle.some(item => item.id === articleId)) {
+                messageDiv.textContent = `L'article "${libelle}" a déjà été ajouté.`;
+                messageDiv.style.color = 'blue';
+
+                // Vérifiez si quantiteInput est défini avant de modifier sa propriété
+                if (quantiteInput) {
+                    quantiteInput.setAttribute("disabled", "true");
+                }
+
+                // Vérifiez si addRowButton est défini avant de modifier sa propriété
+                if (addRowButton) {
+                    addRowButton.disabled = true;
+                }
             } else {
                 messageDiv.textContent = '';
+                messageDiv.style.color = 'green';
+
+                // Vérifiez si quantiteInput est défini avant de le modifier
+                if (quantiteInput) {
+                    quantiteInput.removeAttribute("disabled");
+                    quantiteInput.setAttribute("data-prix", article.prix);
+                    quantiteInput.setAttribute("data-id", articleId);
+                }
+
+                // Vérifiez si uniteInput est défini avant de le modifier
+                if (uniteInput) {
+                    uniteInput.value = article.libelleUnite;
+                    console.log(uniteInput.value);
+                }
+
+                idArticle = articleId;
+
+                const quantiteValue = parseFloat(quantiteInput.value);
+                if (!isNaN(quantiteValue) && addRowButton) {
+                    addRowButton.disabled = false;
+                } else if (addRowButton) {
+                    addRowButton.disabled = true;
+                }
             }
         } else {
-            messageDiv.textContent = `La valeur ${libelle} n'existe pas dans la base de données.`;
+            messageDiv.textContent = `La valeur "${libelle}" n'existe pas dans la base de données.`;
             messageDiv.style.color = 'red';
-            quantiteInput.setAttribute("disabled", "true");
-        }
 
-        addRowButton.disabled = !quantiteInput.value;
+            // Vérifiez si quantiteInput est défini avant de modifier sa propriété
+            if (quantiteInput) {
+                quantiteInput.setAttribute("disabled", "true");
+            }
+
+            // Vérifiez si addRowButton est défini avant de modifier sa propriété
+            if (addRowButton) {
+                addRowButton.disabled = true;
+            }
+        }
     } catch (error) {
         console.error("Erreur lors de la requête fetch :", error);
         messageDiv.textContent = "Erreur lors de la requête fetch.";
         messageDiv.style.color = 'red';
-        quantiteInput.setAttribute("disabled", "true");
-        addRowButton.disabled = true;
+
+        // Vérifiez si quantiteInput est défini avant de modifier sa propriété
+        if (quantiteInput) {
+            quantiteInput.setAttribute("disabled", "true");
+        }
+
+        // Vérifiez si addRowButton est défini avant de modifier sa propriété
+        if (addRowButton) {
+            addRowButton.disabled = true;
+        }
     }
 }
+
 
 
 function addNewColumn() {
@@ -374,6 +420,7 @@ function addNewColumn() {
         <div class="input-group">
             <input type="text" class="form-control article" placeholder="Article">
             <input type="text" class="form-control quantite" placeholder="Quantite" disabled>
+            <input type="text" class="form-control unite" placeholder="Unite" disabled>
         </div>  
         <div class="messageDiv"></div>
     `;
@@ -383,11 +430,12 @@ function addNewColumn() {
 
     const articleInput = newRow.querySelector(".article");
     const quantiteInput = newRow.querySelector(".quantite");
+    const uniteInput = newRow.querySelector(".unite"); // Récupérez l'élément "Unite" de la nouvelle ligne
     const messageDiv = newRow.querySelector(".messageDiv");
     const addRowButton = document.getElementById("addRowButton");
 
     articleInput.addEventListener("input", async function () {
-        await checkArticle(this.value, messageDiv, quantiteInput, addRowButton);
+        await checkArticle(this.value, messageDiv, quantiteInput, uniteInput, addRowButton); // Passez uniteInput en tant qu'argument
     });
 
     quantiteInput.addEventListener("blur", function () {
@@ -399,16 +447,12 @@ function addNewColumn() {
             const total = value * prix;
             console.log(total);
             messageDiv.textContent = "";
-            // messageDiv.textContent = `Total: ${total.toFixed(2)}`;
             totalGlobal += total;
-
-            // Mettez à jour les tableaux quantiteArticle et articleConfection
             tableauQuantiteArticle.push({
+                id: idArticle,
                 article: articleInput.value,
                 quantite: quantiteInput.value
             });
-
-            // Mettez à jour l'input coutproduction
             updateCoutProductionInput();
         } else {
             addRowButton.disabled = true;
@@ -439,8 +483,36 @@ libelleInput.addEventListener("input", updateReferences);
 categorieInput.addEventListener("change", updateReferences);
 
 //----------------******************** FIN PARTIE REFERENCE**************------------------------------
+// const validateButton = document.getElementById("validateButton");
+
+async function checkArticleAndCategory() {
+    try {
+        const libelleArticle = libelleInput.value;
+       
+
+        const response = await fetch("http://localhost:8000/api/article");
+        const data = await response.json();
+
+        const articleExists = data.some(article => article.libelle.toLowerCase() === libelleArticle.toLowerCase());
+       
+
+       
+
+        if (articleExists) {
+            validateButton.setAttribute("disabled", "disabled");
+        } else {
+            validateButton.removeAttribute("disabled");
+        }
+    } catch (error) {
+        console.error("Une erreur s'est produite :", error);
+    }
+}
+
+libelleInput.addEventListener("input", checkArticleAndCategory);
+
 
 const validateButton = document.getElementById("validateButton");
+const coutProductionInput = document.getElementById("coutproduction");
 validateButton.addEventListener("click", async () => {
     try {
         console.log('yessssss');
@@ -459,7 +531,7 @@ validateButton.addEventListener("click", async () => {
             photo: photo,
             marge: marge,
             prixvente: prixVente,
-            ArticleQuantite:tableauQuantiteArticle,
+            ArticleQuantite: tableauQuantiteArticle,
             cheminImage: cheminImage,
         };
 
@@ -469,6 +541,8 @@ validateButton.addEventListener("click", async () => {
                 <tr class="">
                 <td>${articleData['libelle']}</td>
                 <td>${articleData['references']}</td>
+                <td>${articleData['prixvente']}</td>
+                <td><button type="button" class="btn btn-secondary" id="">Details</button></td>
                     <td>
                         <button class="btn btn-primary">
                             <i class="fas fa-edit"></i>
@@ -481,6 +555,13 @@ validateButton.addEventListener("click", async () => {
             `;
 
         libelleInput.value = "";
+        categorie.value = "";
+        taille.value = "";
+        margeInput.value = "";
+        prixVenteInput.value = "";
+        coutProductionInput.value = "";
+        messageArticle.textContent = "";
+        breukh.innerHTML = "";
         validateButton.setAttribute("disabled", "disabled");
         if (response.success) {
             console.log("Article ajouté avec succès :", response.message);
@@ -493,3 +574,120 @@ validateButton.addEventListener("click", async () => {
         console.error("Une erreur s'est produite lors de l'ajout de l'article :", erreur);
     }
 });
+
+const response2 = await fetch(`${WEB_URL}/articlevente`);
+const data2 = await response2.json();
+// console.log(data);
+const tableauArticleVente = document.getElementById("tableauArticleVente"); // Assurez-vous d'avoir un élément avec l'ID "tbodycategorie"
+
+// const tableauArticleVente = document.getElementById("tableauArticleConfection");
+const prevPageButton = document.getElementById("prevPage");
+const nextPageButton = document.getElementById("nextPage");
+const currentPageSpan = document.getElementById("currentPage");
+const itemsPerPage = 7; // Nombre d'éléments par page
+let currentPage = 1;    // Page actuelle
+
+// Fonction pour générer le contenu du tableau en fonction de la pagination
+function generateTable() {
+    tableauArticleVente.innerHTML = "";
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+
+    for (let i = startIndex; i < Math.min(endIndex, data2.length); i++) {
+        const cat = data2[i];
+
+        const row = `
+        <tr class="">
+                <td>${cat['libelle']}</td>
+                <td>${cat['prixVente']}</td>
+                <td>${cat['reference']}</td>
+                <td><button type="button" class="btn btn-secondary detail" id="${cat['id']}" data-bs-toggle="modal" data-bs-target="#detailModal">Details</button></td>
+                    <td>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+    `;
+
+        tableauArticleVente.innerHTML += row;
+        const DETAIL = document.querySelectorAll('.detail');
+        DETAIL.forEach(element => {
+
+            element.addEventListener('click', async () => {
+                modalDetailArtticle.innerHTML = "";
+                const articleId = +element.getAttribute('id');
+                const response = await fetch('http://localhost:8000/api/article/detailArticleVente')
+                const response1 = await fetch('http://localhost:8000/api/articleInput')
+                const data = await response.json();
+                const data1 = await response1.json();
+
+                data.forEach(element => {
+                    if (articleId == element.idarticle) {
+                        data1.forEach(articleConf => {
+                            if (articleConf.id == element.idarticleConfection) {
+                                modalDetailArtticle.innerHTML +=
+                                    `
+                            <div class="card" style="width: 13rem; margin-right: 10px;">
+                            <img id="photo" src="${articleConf.photo}" alt="" style="width: 207px; height: 200px;">
+                            <div class="card-body">
+                                <h5 class="text-center">${articleConf.libelle}</h5>
+                                <h5 class="text-center">${articleConf.prix}</h5>
+                                <p class="text-center">${articleConf.libelleUnite}</p>
+                                <p class="text-center">quantite :  ${element.quantite}</p>
+                            </div>
+                        </div>
+                            `
+                            }
+                        });
+
+                    }
+                });
+
+
+            });
+
+
+            // async function fetchDetailsFromAPI(articleId) {
+
+            //         const response = await fetch(`http://localhost:8000/api/article/detailArtVente`);
+            //         const data = await response.json();
+            //         console.log(data);
+
+
+            // }          
+        });
+    }
+
+    // updatePageIndicator();
+}
+// async function afficherDetailsArticle(articleId) {
+
+//     console.log(articleId);
+// }
+
+// Gérer le clic sur le bouton "Précédent"
+prevPageButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (currentPage > 1) {
+        currentPage--;
+        generateTable();
+    }
+});
+
+// Gérer le clic sur le bouton "Suivant"
+nextPageButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    const startIndex = currentPage * itemsPerPage;
+    if (startIndex < data2.length) {
+        currentPage++;
+        generateTable();
+    }
+});
+
+// Appeler la fonction pour générer le contenu initial du tableau
+generateTable();

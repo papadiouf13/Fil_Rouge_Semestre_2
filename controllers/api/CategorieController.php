@@ -58,7 +58,7 @@ public function store() {
             ]);
 
             $unite = Unite::create([
-                'libelle' => $data['unite'],
+                'libelleUnite' => $data['unite'],
                 'etat' => 1
             ]);
             UniCategorie::create([
